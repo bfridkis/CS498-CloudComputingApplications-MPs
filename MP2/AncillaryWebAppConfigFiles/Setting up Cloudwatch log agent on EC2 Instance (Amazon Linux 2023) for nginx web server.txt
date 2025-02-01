@@ -1,0 +1,41 @@
+ # Setting up Cloudwatch log agent on EC2 Instance (Amazon Linux 2023) for nginx web server
+ 
+ # Install cloudwatch-agent
+ sudo yum install amazon-cloudwatch-agent
+ 
+ # Configure cloudwatch-agent
+ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
+ 
+ # Follow wizard steps...
+ ## For nginx, monitor the following logs:
+ ### /var/log/nginx/error.log
+ ### /var/log/nginx/access.log
+ 
+ # Fetch config just pushed to SSM (Systems Manager - via wizard)
+ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:AmazonCloudWatch-linux
+ 
+ # Need to create a types.db file if not present
+ sudo mkdir -p /usr/share/collectd/
+ sudo touch /usr/share/collectd/types.db
+ 
+ # Check cloudwatch-agent status
+ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a status
+
+ # Start cloudwatch-agent service
+  sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a start
+  
+  # Use this resource to make sure you have an IAM Role assigned to the instance (use Cloudwatch CLI to create instance profile and assign role)
+  # https://stackoverflow.com/questions/70429858/iam-role-does-not-show-in-role-list-of-ec2-even-though-i-have-the-trust-relatio
+  
+  # Troubleshooting Cloudwatch Agent
+  tail -f /var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log
+  vi /var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log
+  
+  # If error "AssumeRoleUnauthorized: EC2 cannot assume the role <IAM Role Assigned to Instance>
+  ## Update Trust Relationships on Role, so Principal service is "ec2.amazon.com"
+  ## See https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_iam-ec2.html#troubleshoot_iam-ec2_errors-info-doc
+  
+# References
+# https://www.youtube.com/watch?v=8DbUU83I3zs
+# https://stackoverflow.com/questions/70429858/iam-role-does-not-show-in-role-list-of-ec2-even-though-i-have-the-trust-relatio
+# https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_iam-ec2.html#troubleshoot_iam-ec2_errors-info-doc

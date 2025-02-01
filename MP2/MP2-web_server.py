@@ -1,23 +1,37 @@
+import os
+import getpass
 from flask import Flask, redirect, url_for, request
 app = Flask(__name__)
 
 @app.route('/', methods=['POST', 'GET'])
 def field_request():
+    #print(os.getcwd())
+    #print("Env thinks the user is [%s]" % (os.getlogin()))
+    #print("Effective user is [%s]" % (getpass.getuser()))
+    print(f"Printing request.form:  {request.form}")
+    #print(bool(request.form.to_dict()))
     if request.method == 'POST':
         try:
-            with open('./seed.txt', 'w') as file:
-                file.write(request.form['num'])
-                return "Seed value updated with value of request.form['num']"
+            with open('/home/ec2-user/MP2/seed.txt', 'w') as file:
+                if "num" in request.form.to_dict():
+                    file.write(request.form['num'])
+                    return "Seed value updated with value of request.form['num']"
+                else:
+                    file.write("0")
+                    return "Seed value updated with default value of 0"
         except:
             print("Error opening or creating seed.txt file")
     elif request.method == 'GET':
         try:
-            with open('./seed.txt', 'r') as file:
+            with open('/home/ec2-user/MP2/seed.txt', 'r') as file:
                 return file.read()
         except:
-            with open('./seed.txt', 'w') as file:
+            with open('/home/ec2-user/MP2/seed.txt', 'w') as file:
                 file.write("0")
                 return "0"
+
+if __name__ == '__main__':
+   app.run(debug = True)
 
 if __name__ == '__main__':
    app.run(debug = True)
@@ -34,3 +48,4 @@ if __name__ == '__main__':
 # https://dev.to/askyt/create-a-file-if-not-exists-in-python-19j3
 # https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest?view=powershell-7.5
 # https://unix.stackexchange.com/questions/106561/finding-the-pid-of-the-process-using-a-specific-port
+# https://www.youtube.com/watch?v=8DbUU83I3zs
