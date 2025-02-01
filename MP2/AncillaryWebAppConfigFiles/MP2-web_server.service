@@ -1,0 +1,18 @@
+# Creates a daemon to automatically restart the web server "MP2-web_server" app if it goes down (e.g. system reboot, etc).
+# Save to /etc/systemd/system/
+# Run the following after any changes:
+## sudo systemctl daemon-reload
+## sudo systemctl start MP2-web_server
+## sudo systemctl enable MP2-web_server
+
+[Unit]
+Description=Gunicorn instance for MP2 web server (CS498)
+After=network.target
+[Service]
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user/MP2
+ExecStart=/home/ec2-user/MP2/venv/bin/gunicorn -b localhost:8000 MP2-web_server:app
+Restart=always
+[Install]
+WantedBy=multi-user.target
