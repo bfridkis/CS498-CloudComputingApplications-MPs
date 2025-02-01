@@ -4,7 +4,7 @@ import json
 ''' Fill in the following information '''
 # General information
 YOUR_EMAIL = "fridkis2@illinois.edu" # <put your coursera account email>,
-YOUR_SECRET = "4rkeTo25I8O4XtaD" # <put your secret token from coursera>
+YOUR_SECRET = "aYqhta9cHmVDE4IX" # <put your secret token from coursera>
 
 # <To get full credits, leave this blank. It will run both section 1 and section 2 tests>
 SECTION = "1" # <put "1" to test section 1 in isolation; put "2" to test section 2 in isolation>
