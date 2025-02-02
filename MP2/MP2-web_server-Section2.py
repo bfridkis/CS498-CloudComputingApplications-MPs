@@ -1,6 +1,9 @@
 import os
 import getpass
+import socket
+import subprocess
 from flask import Flask, redirect, url_for, request
+from subprocess import Popen, PIPE
 app = Flask(__name__)
 
 #return_val = "0"
@@ -10,34 +13,14 @@ def field_request():
     #global return_val
     if request.method == 'POST':
         try:
-            print(f"Printing request.get_json():  {request.get_json()}")
-            if request.get_json()['num']:
-                update_val = str(request.get_json()['num'])
-            else:
-                update_val = "0"
+            process = subprocess.Popen(['python3', 'stress_cpu.py'])
+            return f"Successfully launched stress_cpu.py. PID: {process.pid}"
         except:
-            print(f"Printing request.form: {request.form}")
-            if "num" in request.form:
-                update_val = str(request.form['num'])
-            else:
-                update_val = "0"
-        try:
-            with open('/home/ec2-user/MP2/seed.txt', 'w') as file:
-                file.write(update_val)
-            return f"Updated seed.txt file with value of {update_val}"
-        except:
-            print("Could not open seed.txt file!")
-            return "Failure: Could not open seed file."
+            print("Could not launch stress_cpu.py!")
+            return "Failure: Could not launch stress_cpu.py."
 
     elif request.method == 'GET':
-        try:
-            with open('/home/ec2-user/MP2/seed.txt', 'r') as file:
-                return file.read()
-        except:
-            with open('/home/ec2-user/MP2/seed.txt', 'w') as file:
-                print("Creating seed.txt file")
-                file.write("0")
-                return "0"
+        return socket.gethostname()
 
 if __name__ == '__main__':
    app.run(debug = True)
@@ -55,3 +38,4 @@ if __name__ == '__main__':
 # https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest?view=powershell-7.5
 # https://unix.stackexchange.com/questions/106561/finding-the-pid-of-the-process-using-a-specific-port
 # https://www.youtube.com/watch?v=8DbUU83I3zs
+# https://stackoverflow.com/questions/7152340/using-a-python-subprocess-call-to-invoke-a-python-script
