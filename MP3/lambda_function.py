@@ -7,7 +7,9 @@ table = dynamodb.Table('MP3-DistanceGraph')
 
 def lambda_handler(event, context):
     
-    results = process_graph()
+    print(f"event: {event}")
+
+    results = process_graph(event)
 
     scan = table.scan(
         ProjectionExpression='#k,#sk',
@@ -81,7 +83,10 @@ def lambda_handler(event, context):
     }
 
 def process_graph(graph='{"graph": "Chicago->Urbana,Urbana->Springfield,Chicago->Lafayette"}'):
-    graph_data_str = json.loads(graph)["graph"]
+    try:
+        graph_data_str = json.loads(graph)["graph"]
+    except:
+        graph_data_str = graph["graph"]
     graph_dict = {}
 
     edges = graph_data_str.split(",")
@@ -103,6 +108,9 @@ def process_graph(graph='{"graph": "Chicago->Urbana,Urbana->Springfield,Chicago-
             shortest_paths.append({"source": source, "destination": destination, "distance": distance})
     
     return shortest_paths
+
+# REFERENCES:   
+# https://www.google.com/search?q=breadth+first+search+to+find+shortest+path+unweighted+edges+python&rlz=1C1GCCA_enUS1080US1080&oq=breadth+first+search+to+find+shortest+path+unweighted+edges+python&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDY0MjhqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8
 
 # The Function Below Is Taken directly from GoogleAI search (with slight modification)
 # From Google AI overview: search prompt - "breadth first search to find shortest path unweighted edges python"

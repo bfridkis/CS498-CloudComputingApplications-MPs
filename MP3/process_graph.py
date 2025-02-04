@@ -4,7 +4,10 @@ sys.path.append("C:\\Users\\fridkbj\\OneDrive - Phillips 66\\Documents\\UIUC Mas
 from googleAIbreadthfirst import bfs_shortest_paths
 
 def process_graph(graph='{"graph": "Chicago->Urbana,Urbana->Springfield,Chicago->Lafayette"}'):
-    graph_data_str = json.loads(graph)["graph"]
+    try:
+        graph_data_str = json.loads(graph)["graph"]
+    except:
+        graph_data_str = graph["graph"]
     graph_dict = {}
 
     edges = graph_data_str.split(",")
