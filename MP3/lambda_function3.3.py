@@ -12,9 +12,9 @@ def dispatch(intent_request):
     intent_name = intent_request['sessionState']['intent']['name']
     response = None
     # Dispatch to your bot's intent handlers
-    if intent_name == 'DetermineDistance-CitiesProvided':
+    if intent_name == 'DetermineDistance_CitiesProvided':
         return DetermineDistance_CitiesProvided(intent_request)
-    elif intent_name == 'DetermineDistance-CitiesNotProvided':
+    elif intent_name == 'DetermineDistance_CitiesNotProvided':
         return DetermineDistance_CitiesNotProvided(intent_request)
 
     raise Exception('Intent with name ' + intent_name + ' not supported')
@@ -64,10 +64,10 @@ def DetermineDistance_CitiesProvided(intent_request):
     # return close(intent_request, session_attributes, fulfillment_state, message)
     
     response = table.query(
-        KeyConditionExpression=Key('pk').eq('Chicago') & Key('sk')..eq('Springfield),
+        KeyConditionExpression=Key('pk').eq('Chicago') & Key('sk').eq('Springfield'),
         FilterExpression=Attr('name').eq('SomeName')
     )
-    print(elicit_intent(intent_request, get_session_attributes(intent_request), None)
+    print(elicit_intent(intent_request, get_session_attributes(intent_request), None))
     return(response)
     
 
