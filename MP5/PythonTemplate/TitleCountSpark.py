@@ -36,7 +36,7 @@ def filter_word(stop_words):
         return word not in stop_words
     return _filter_word
     
-output = sorted(lines.map(split_line(delimiters)).flatMap(lambda x: x.split(' ')).map(lambda x: x.lower()).filter(filter_word(stop_words)).countByValue().items(), key = lambda kv: (kv[1], kv[0]))[-10:]
+output = sorted(lines.map(split_line(delimiters)).flatMap(lambda x: x.split(' ')).map(lambda x: x.lower()).filter(filter_word(stop_words)).countByValue().items(), key = lambda kv: (kv[1], kv[0]))[-5:]
     
 outputFile = open(sys.argv[4],"w")
 with outputFile as f:
@@ -53,3 +53,4 @@ sc.stop()
 # https://www.google.com/search?q=pyspark+counting+example+no+dataframe&sca_esv=d4768e3d9c71eb29&rlz=1C1CHBF_enUS1071US1071&ei=m02lZ56OENLCp84P5K_syQg&ved=0ahUKEwjex7mbobCLAxVS4ckDHeQXO4kQ4dUDCBI&uact=5&oq=pyspark+counting+example+no+dataframe&gs_lp=Egxnd3Mtd2l6LXNlcnAiJXB5c3BhcmsgY291bnRpbmcgZXhhbXBsZSBubyBkYXRhZnJhbWUyBRAhGKABMgUQIRigATIFECEYoAEyBRAhGKABMgUQIRifBUiMMVCUB1iKL3ACeACQAQCYAYABoAGJDaoBBDIuMTO4AQPIAQD4AQGYAhCgAusMwgIKEAAYsAMY1gQYR8ICBhAAGBYYHsICCxAAGIAEGIYDGIoFwgIFEAAY7wXCAggQABiiBBiJBcICBRAhGKsCmAMAiAYBkAYIkgcEMy4xM6AHsVU&sclient=gws-wiz-serp
 # https://stackoverflow.com/questions/28999332/how-to-access-sparkcontext-in-pyspark-script
 # https://stackoverflow.com/questions/33019420/spark-rdd-mapping-with-extra-arguments
+# https://spark.apache.org/docs/latest/api/python/reference/pyspark.html

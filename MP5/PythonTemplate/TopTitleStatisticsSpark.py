@@ -9,7 +9,11 @@ sc = SparkContext(conf=conf)
 
 lines = sc.textFile(sys.argv[1], 1)
 
-#TODO
+Mean = int(lines.map(lambda x: int(x.split('\t')[1])).mean() // 1)
+Sum = lines.map(lambda x: int(x.split('\t')[1])).sum()
+Min = lines.map(lambda x: int(x.split('\t')[1])).min()
+Max = lines.map(lambda x: int(x.split('\t')[1])).max()
+Variance = int(lines.map(lambda x: int(x.split('\t')[1])).variance() // 1)
 
 outputFile = open(sys.argv[2], "w")
 '''
@@ -21,6 +25,12 @@ outputFile.write('Min\t%s\n' % ans3)
 outputFile.write('Max\t%s\n' % ans4)
 outputFile.write('Var\t%s\n' % ans5)
 '''
+
+outputFile.write(f"Mean\t{Mean}\n")
+outputFile.write(f"Sum\t{Sum}\n")
+outputFile.write(f"Min\t{Min}\n")
+outputFile.write(f"Max\t{Max}\n")
+outputFile.write(f"Var\t{Variance}\n")
 
 sc.stop()
 
