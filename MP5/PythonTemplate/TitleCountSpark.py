@@ -36,7 +36,7 @@ def filter_word(stop_words):
         return word not in stop_words
     return _filter_word
     
-output = sorted(lines.map(split_line(delimiters)).flatMap(lambda x: x.split(' ')).map(lambda x: x.lower()).filter(filter_word(stop_words)).countByValue().items(), key = lambda kv: (kv[1], kv[0]))[-5:]
+output = sorted(lines.map(split_line(delimiters)).flatMap(lambda x: x.split(' ')).map(lambda x: x.lower()).filter(filter_word(stop_words)).countByValue().items(), key = lambda kv: (kv[1], kv[0]))[-10:]
     
 outputFile = open(sys.argv[4],"w")
 with outputFile as f:
