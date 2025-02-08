@@ -11,15 +11,23 @@ sc = SparkContext(conf=conf)
 lines = sc.textFile('dataset/links/')
 lines = sc.textFile(sys.argv[1], 1) 
 
-#TODO
 
 leagueIds = sc.textFile('dataset/league2.txt')
 leagueIds = sc.textFile(sys.argv[2], 1)
 leagueIdslist = leagueIds.collect()
 
-#TODO
+# Works locally but would not pass auto-grader because it is very memory intensive (doesn't spread memory load), causes "java.io.IOException - Failed to connect to ip..." error) - See additional resources on TitleCoutSpark.py.
+#results = lines.flatMap(lambda x: x.split(':')[1][1:].split(' ')).filter(lambda x: x in leagueIdslist).countByValue()
 
-results = lines.flatMap(lambda x: x.split(':')[1][1:].split(' ')).filter(lambda x: x in leagueIdslist).countByValue()
+# From https://www.google.com/search?q=use+reduce+to+count+occurrences+pyspark&rlz=1C1CHBF_enUS1071US1071&oq=use+reduce+to+count+occurrences+pyspark&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORigATIHCAEQIRigATIHCAIQIRigATIHCAMQIRiPAtIBCDY3NTFqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8 
+def count_occurrences(dict1, dict2):
+    result = dict1.copy()
+    for key, value in dict2.items():
+        result[key] = result.get(key, 0) + value
+    return result
+    
+# Use map and reduce funtions instead of countByValue
+results = lines.flatMap(lambda x: x.split(':')[1][1:].split(' ')).filter(lambda x: x in leagueIdslist).map(lambda x: {x: 1}).reduce(count_occurrences)
 
 # Reference
 # https://www.google.com/search?q=group+by+values+dictionary+python&rlz=1C1CHBF_enUS1071US1071&oq=group+by+values+dictionary+python&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIICAEQABgWGB4yBwgCEAAY7wUyCggDEAAYgAQYogQyBwgEEAAY7wXSAQg4MjgwajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
