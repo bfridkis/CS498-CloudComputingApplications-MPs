@@ -13,7 +13,7 @@ Mean = int(lines.map(lambda x: int(x.split('\t')[1])).mean() // 1)
 Sum = lines.map(lambda x: int(x.split('\t')[1])).sum()
 Min = lines.map(lambda x: int(x.split('\t')[1])).min()
 Max = lines.map(lambda x: int(x.split('\t')[1])).max()
-Variance = int(lines.map(lambda x: int(x.split('\t')[1])).variance())
+Variance = int(lines.map(lambda x: int(x.split('\t')[1])).variance() // 1)
 
 outputFile = open(sys.argv[2], "w")
 '''

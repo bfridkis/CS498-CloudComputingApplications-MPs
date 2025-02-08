@@ -23,7 +23,7 @@ conf.set("spark.driver.bindAddress", "127.0.0.1")
 sc = SparkContext(conf=conf)
 
 lines = sc.textFile(sys.argv[3], 1)
-lines = sc.textFile('dataset/titles/', 1)
+#lines = sc.textFile('dataset/titles/', 1)
 
 def split_line(delimiters):
     def _split_line(line):

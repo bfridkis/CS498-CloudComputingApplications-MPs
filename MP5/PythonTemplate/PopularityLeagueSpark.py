@@ -8,8 +8,8 @@ conf = SparkConf().setMaster("local").setAppName("PopularityLeague")
 conf.set("spark.driver.bindAddress", "127.0.0.1")
 sc = SparkContext(conf=conf)
 
-lines = sc.textFile('dataset/links/')
-lines = sc.textFile(sys.argv[1], 1) 
+lines = sc.textFile(sys.argv[1], 1)
+#lines = sc.textFile('dataset/links/')
 
 
 leagueIds = sc.textFile('dataset/league2.txt')
