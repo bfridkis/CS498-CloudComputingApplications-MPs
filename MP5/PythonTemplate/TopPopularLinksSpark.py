@@ -26,3 +26,5 @@ with output as f:
 
 sc.stop()
 
+# Reference
+# https://stackoverflow.com/questions/72709396/java-io-ioexception-in-local-spark-mode
