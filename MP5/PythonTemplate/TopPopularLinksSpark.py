@@ -14,7 +14,7 @@ lines = sc.textFile(sys.argv[1], 1)
 # results_counted = results.countByValue()
 #results = lines.map(lambda x: x.split(':')[1][1:].split(' ')).flatMap(lambda x: x).countByValue()
 #results = lines.flatMap(lambda x: x.split(':')[1][1:].split(' ')).countByValue().items()
-results = sorted(lines.flatMap(lambda x: x.split(':')[1][1:].split(' ')).countByValue().items(), key = lambda kv: (kv[1], kv[0]))[-5:]
+results = sorted(lines.flatMap(lambda x: x.split(':')[1][1:].split(' ')).countByValue().items(), key = lambda kv: (kv[1], kv[0]))[-10:]
 
 output = open(sys.argv[2], "w")
 with output as f:

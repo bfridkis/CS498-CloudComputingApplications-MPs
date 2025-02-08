@@ -14,7 +14,6 @@ pages_with_at_least_one_link = lines.flatMap(lambda x: x.split(':')[1].split(' '
 orphaned_links = lines.map(lambda x: x.split(':')[0]).subtract(pages_with_at_least_one_link).sortBy(lambda x: x).collect()
 
 output = open(sys.argv[2], "w")
-
 with output as f:
     for link in orphaned_links:
         f.write(f"{link}\n")
