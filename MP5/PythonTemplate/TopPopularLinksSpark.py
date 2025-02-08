@@ -20,8 +20,11 @@ def count_occurrences(dict1, dict2):
         result[key] = result.get(key, 0) + value
     return result
 
-# Use map and reduce funtions instead of countByValue
-results = sorted(lines.flatMap(lambda x: x.split(':')[1][1:].split(' ')).map(lambda x: {x: 1}).reduce(count_occurrences).items(), key = lambda kv: (kv[1], kv[0]))[-10:]
+# # This didn't work either. Ran successfully locally, but was very slow and also would not pass the autograder with was appeared to also be a memory issue. Same "java.io.IOException" error. 
+# results = sorted(lines.flatMap(lambda x: x.split(':')[1][1:].split(' ')).map(lambda x: {x: 1}).reduce(count_occurrences).items(), key = lambda kv: (kv[1], kv[0]))[-10:]
+
+#Use map and reduceByKey funtions instead of countByValue or reduce - Could also consider using RDD.sortBy() or RDD.sortByKey() instead of sorting returned dataset locally
+results = sorted(lines.flatMap(lambda x: x.split(':')[1][1:].split(' ')).map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y).collect(), key = lambda kv: (kv[1], kv[0]))[-10:]
 
 output = open(sys.argv[2], "w")
 with output as f:
