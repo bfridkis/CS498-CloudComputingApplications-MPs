@@ -1,3 +1,5 @@
+mysql -h database-1-mp6.cluster-cdaace60ubjw.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
+
 CREATE TABLE mp6_table1 (
     `id` INTEGER unsigned AUTO_INCREMENT,
     `name` VARCHAR(20),
