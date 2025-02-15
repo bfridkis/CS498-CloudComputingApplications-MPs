@@ -104,6 +104,8 @@ def lambda_handler(event, context):
     
     #print(os.listdir('/opt/python/lib/python3.13/site-packages/'))
     #print(sys.path)
+
+    print(f"incoming event: {event}")
     
     USE_CACHE = (event['USE_CACHE'] == "True")
     REQUEST = event['REQUEST']
@@ -123,7 +125,7 @@ def lambda_handler(event, context):
     #Cache = redis.Redis.from_url(REDIS_URL)    #Won't work because ssl has to be set to True for serverless cache
     Cache = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, ssl=True, decode_responses=True, ssl_cert_reqs="none")
     #Cache = redis.RedisCluster(host=REDIS_HOST, port=REDIS_PORT, ssl=True)
-    print(Cache.ping())
+    #print(Cache.ping())
     
     result = []
     if REQUEST == "read":
@@ -135,6 +137,7 @@ def lambda_handler(event, context):
         write(USE_CACHE, event["SQLS"], Database, Cache)
         result = "write success"
     
+    print(f"outgoing result: {result}")
     
     return {
         'statusCode': 200,
