@@ -5,7 +5,7 @@ import json
 payload = {
         "USE_CACHE": "True",
         "REQUEST": "read",
-        "SQLS": [1,2,3]
+        "SQLS": [1,2,3,4,5,6,7,8,9,10]
     }
 #api = "your dbApi"
 api = "https://zhwfwtqyrb.execute-api.us-east-1.amazonaws.com/mp6-stage1"
