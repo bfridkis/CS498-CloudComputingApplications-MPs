@@ -13,6 +13,8 @@ DB_PASS = "fridkis2MP6" # Add your database password
 DB_NAME = "mp6_db" # Add your database name
 DB_TABLE = "mp6_table1" # Add your table name
 REDIS_URL = "redis://mp6-cache-eb9cwu.serverless.use1.cache.amazonaws.com:6379" # Add redis end point "redis://<end point>"
+REDIS_HOST = "mp6-cache-eb9cwu.serverless.use1.cache.amazonaws.com"
+REDIS_PORT = 6379
 
 TTL = 60
 
@@ -39,7 +41,8 @@ class DB:
             idx = str(cursor.fetchone()['id'] + 1)
             return idx
 
-    def insert(self, idx, data, table_name):
+    #def insert(self, idx, data, table_name):
+    def insert(self, data, table_name):
         with self.mysql.cursor() as cursor:
             hero = data["hero"]
             power = data["power"]
@@ -47,9 +50,11 @@ class DB:
             xp = data["xp"]
             color = data["color"]
             
-            sql = f"INSERT INTO {table_name} (`id`, `hero`, `power`, `name`, `xp`, `color`) VALUES ('{idx}', '{hero}', '{power}', '{name}', '{xp}', '{color}')"
-            cursor.execute(sql)
+            #sql = f"INSERT INTO {table_name} (`id`, `hero`, `power`, `name`, `xp`, `color`) VALUES ('{idx}', '{hero}', '{power}', '{name}', '{xp}', '{color}')"
+            sql = f"INSERT INTO {table_name} (`hero`, `power`, `name`, `xp`, `color`) VALUES ('{hero}', '{power}', '{name}', '{xp}', '{color}')"
+            result = cursor.execute(sql)
             self.mysql.commit()
+            return result
 
  # TODO 2
 def read(use_cache, xps, Database, Cache):
@@ -59,35 +64,42 @@ def read(use_cache, xps, Database, Cache):
     
     if use_cache: # Use cache
       
-      for xp in xps:
-          sql = f"SELECT * FROM {DB_TABLE} WHERE xp = {xp}"
-          res = Cache.get(sql)
-          if res:
-              result.append(res)
-          else:
-              res = Database.query(sql)
-              Cache.setex(sql, TTL, json.dumps(res))
-              result.append(res)
+        for xp in xps:
+            res = Cache.get(xp)
+            if res:
+                res = json.loads(res)
+                #print(f"cache response: {res} respone type: {type(res)}")
+                result.append(res)
+            else:
+                sql = f"SELECT * FROM {DB_TABLE} WHERE xp = {xp}"
+                res = Database.query(sql)[0]
+                #print(f"database response: {res} respone type: {type(res)}")
+                Cache.setex(xp, TTL, json.dumps(res))
+                result.append(res)
        
     else: # Do not use cache
-    
         for xp in xps:
             sql = f"SELECT * FROM {DB_TABLE} WHERE xp = {xp}"
             res = Database.query(sql)
             result.append(res)
     
     return result
-    
-    
+
 # TODO 3
-def write(use_cache, sqls, Database, Cache):
+def write(use_cache, records, Database, Cache):
     # Implement Write Through strategy
     
-    if use_cache: # Use cache
-       
-    else: # Do not use cache
+    for record in records:
         
-
+        result = Database.insert(record, DB_TABLE)
+        
+        if use_cache: # Use cache
+            sql = f"SELECT * FROM {DB_TABLE} WHERE xp = {record["xp"]}"
+            res = Database.query(sql)[0]
+            Cache.setex(record["xp"], TTL, json.dumps(res))
+                
+        # else: # Do not use cache
+            
 def lambda_handler(event, context):
     
     #print(os.listdir('/opt/python/lib/python3.13/site-packages/'))
@@ -103,12 +115,15 @@ def lambda_handler(event, context):
         print("ERROR: Unexpected error: Could not connect to MySQL instance.")
         print(e)
         sys.exit()
-        
+
     #testq = "SELECT * FROM mp6_table1 ORDER BY name LIMIT 10;"
     #print(Database.query(testq))
         
     # Initialize cache
-    Cache = redis.Redis.from_url(REDIS_URL)
+    #Cache = redis.Redis.from_url(REDIS_URL)    #Won't work because ssl has to be set to True for serverless cache
+    Cache = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, ssl=True, decode_responses=True, ssl_cert_reqs="none")
+    #Cache = redis.RedisCluster(host=REDIS_HOST, port=REDIS_PORT, ssl=True)
+    print(Cache.ping())
     
     result = []
     if REQUEST == "read":
@@ -134,3 +149,10 @@ def lambda_handler(event, context):
 # https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/LambdaRedis.html
 # https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/in-transit-encryption-enable-python.html#:~:text=The%20redis%2Dpy%2Dcluster%20client,until%20the%20migration%20is%20finished.
 # https://redis-py.readthedocs.io/en/latest/examples/ssl_connection_examples.html
+# https://repost.aws/questions/QUowoYijPgQZaV-1jes94UKA/how-to-gain-access-to-serverless-elasticache-redis-from-firewalled-vpc
+# https://aws.amazon.com/getting-started/hands-on/boosting-mysql-database-performance-with-amazon-elasticache-for-redis/
+
+# Notes
+# Needed to add the "AmazonElastiCacheFullAccess" and "AWSLambdaVPCAccessExecutionRole" permission policies to the lambda IAM role (Actally no, this wasn't necessary after all!)
+## The big hold up getting the lambda to talk to the (serverless) cache was the specification of ssl in the Redis connection/constructor call.
+## See: https://repost.aws/questions/QUowoYijPgQZaV-1jes94UKA/how-to-gain-access-to-serverless-elasticache-redis-from-firewalled-vpc
