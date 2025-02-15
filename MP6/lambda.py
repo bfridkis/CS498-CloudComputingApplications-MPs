@@ -132,3 +132,5 @@ def lambda_handler(event, context):
 # https://www.geeksforgeeks.org/how-to-install-python-packages-for-aws-lambda-layers/
 # https://docs.aws.amazon.com/lambda/latest/dg/python-package.html
 # https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/LambdaRedis.html
+# https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/in-transit-encryption-enable-python.html#:~:text=The%20redis%2Dpy%2Dcluster%20client,until%20the%20migration%20is%20finished.
+# https://redis-py.readthedocs.io/en/latest/examples/ssl_connection_examples.html
