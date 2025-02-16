@@ -72,7 +72,8 @@ def read(use_cache, xps, Database, Cache):
                 result.append(res)
             else:
                 sql = f"SELECT * FROM {DB_TABLE} WHERE xp = {xp}"
-                res = Database.query(sql)[0]
+                #res = Database.query(sql)[0]
+                res = Database.record(sql, None)
                 #print(f"database response: {res} respone type: {type(res)}")
                 Cache.setex(xp, TTL, json.dumps(res))
                 result.append(res)
@@ -80,7 +81,8 @@ def read(use_cache, xps, Database, Cache):
     else: # Do not use cache
         for xp in xps:
             sql = f"SELECT * FROM {DB_TABLE} WHERE xp = {xp}"
-            res = Database.query(sql)
+            #res = Database.query(sql)[0]
+            res = Database.record(sql, None)
             result.append(res)
     
     return result
@@ -137,7 +139,9 @@ def lambda_handler(event, context):
         write(USE_CACHE, event["SQLS"], Database, Cache)
         result = "write success"
     
-    print(f"outgoing result: {result}")
+    print(f"outgoing result: {result} result type: {type(result)}")
+    #print(f"outgoing result[0]: {result[0]} result[0] type: {type(result[0])}")
+    
     
     return {
         'statusCode': 200,

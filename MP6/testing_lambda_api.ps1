@@ -2,10 +2,11 @@
 
 #$url = "your_api_endpoint_url"
 $url = "https://zhwfwtqyrb.execute-api.us-east-1.amazonaws.com/mp6-stage1"
+$sqls = @(1, 2, 3)
 $body = @{
-    "USE_CACHE": "True",
-    "REQUEST": "read",
-    "SQLS": [1,2,3]
+    "USE_CACHE" = "True";
+    "REQUEST" = "read";
+    "SQLS" = $sqls
 } | ConvertTo-Json
 
 $headers = @{

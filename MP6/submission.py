@@ -5,7 +5,7 @@ url = 'https://6rlj4ydnkovjlz2b5w75pgpnwu0chhfp.lambda-url.us-east-1.on.aws/'
 
 payload = {
 			"submitterEmail": "fridkis2@illinois.edu", # your email as it appears on the MP instruction page
-			"secret": "1PTaoPVeM6gWLYrM", # your secret key as it appears on the MP instruction page
+			"secret": "8GXM1Ryi3K4vfnkt", # your secret key as it appears on the MP instruction page
 			"dbApi": "https://zhwfwtqyrb.execute-api.us-east-1.amazonaws.com/mp6-stage1" # Your API Gateway POST API invoke url
 		}
 
