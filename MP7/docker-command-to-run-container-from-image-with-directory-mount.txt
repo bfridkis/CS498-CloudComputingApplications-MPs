@@ -1,0 +1,1 @@
+docker run -v "C:\Users\Annjamin\Documents\Benj's Stuff\UIUC MCS\CS498-CloudComputingApplications\CS498-CloudComputingApplications-MPs\MP7\:/MP7" --name mp7-cntr -it mp7

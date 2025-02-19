@@ -30,21 +30,50 @@ public class TablePartD{
 	// DON' CHANGE THE 'System.out.println(xxx)' OUTPUT PART
 	// OR YOU WON'T RECEIVE POINTS FROM THE GRADER 
 	
-	String hero = ???;
-	String power = ???;
-	String name = ???;
-	String xp = ???;
-	String color = ???;
+	//Create table connection (See TablePartA.java for more detailed comments on these functions)
+	Configuration config = HBaseConfiguration.create();
+	Connection connection = ConnectionFactory.createConnection(config);
+	
+	//Get the powers table
+	Table table = connection.getTable(TableName.valueOf("powers"));
+	
+	//Get row 1 using Get and Result classes
+	Get g = new Get(Bytes.toBytes("row1"));
+	Result result = table.get(g);
+	
+	// Reading values from Result class object, all fields
+    byte [] hero1 = result.getValue(Bytes.toBytes("personal"),Bytes.toBytes("hero"));
+    byte [] power1 = result.getValue(Bytes.toBytes("personal"),Bytes.toBytes("power"));
+    byte [] name1 = result.getValue(Bytes.toBytes("professional"),Bytes.toBytes("name"));
+    byte [] xp1 = result.getValue(Bytes.toBytes("professional"),Bytes.toBytes("xp"));
+    byte [] color1 = result.getValue(Bytes.toBytes("custom"),Bytes.toBytes("color"));
+	
+	String hero = Bytes.toString(hero1);
+	String power = Bytes.toString(power1);
+	String name = Bytes.toString(name1);
+	String xp = Bytes.toString(xp1);
+	String color = Bytes.toString(color1);
 	System.out.println("hero: "+hero+", power: "+power+", name: "+name+", xp: "+xp+", color: "+color);
 
-	hero = ???;
-	color = ???;
+	//Get row 19 using Get and Result classes
+	g = new Get(Bytes.toBytes("row19"));
+	result = table.get(g);
+	
+	// Reading values from Result class object, hero and color
+    byte [] hero19 = result.getValue(Bytes.toBytes("personal"),Bytes.toBytes("hero"));
+    byte [] color19 = result.getValue(Bytes.toBytes("custom"),Bytes.toBytes("color"));
+
+	hero = Bytes.toString(hero19);
+	color = Bytes.toString(color19);
 	System.out.println("hero: "+hero+", color: "+color);
 
-	hero = ???;
-	name = ???;
-	color = ???;
+	hero = Bytes.toString(hero1);
+	name = Bytes.toString(name1);
+	color = Bytes.toString(color1);
 	System.out.println("hero: "+hero+", name: "+name+", color: "+color); 
    }
 }
 
+// References
+// https://www.tutorialspoint.com/hbase/hbase_read_data.htm
+// https://stackoverflow.com/questions/17939084/get-all-values-of-all-rows-in-hbase-using-java
