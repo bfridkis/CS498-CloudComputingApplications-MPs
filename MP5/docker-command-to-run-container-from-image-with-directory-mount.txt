@@ -1,0 +1,1 @@
+docker run -v "C/Users/Annjamin/Documents/Benj's Stuff/UIUC MCS/CS498-CloudComputingApplications/CS498-CloudComputingApplications-MPs:/MP5" --name mp5-cntr -it mp5
