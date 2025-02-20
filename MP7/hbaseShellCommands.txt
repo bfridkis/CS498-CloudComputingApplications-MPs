@@ -1,0 +1,14 @@
+// hbase shell commands
+
+get 'powers', 'row7', {COLUMN => 'custom:color', VERSIONS => 2}
+
+alter ‘powers′, NAME => ‘custom′, VERSIONS => 2
+
+describe 'powers'
+describe 'food'
+
+disable 'powers'
+disable 'food'
+drop 'powers'
+drop 'food'
+
