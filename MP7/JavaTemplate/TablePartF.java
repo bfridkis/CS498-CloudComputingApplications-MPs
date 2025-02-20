@@ -33,9 +33,9 @@ public class TablePartF{
 	//1. update the data in a particular cell using the put() method
 	
 	//Create table connection (See TablePartA.java for more detailed comments on these functions)
-	  Configuration config = HBaseConfiguration.create();
+	Configuration config = HBaseConfiguration.create();
 	  
-	  try (Connection connection = ConnectionFactory.createConnection(config);
+	try (Connection connection = ConnectionFactory.createConnection(config);
 		   Table table = connection.getTable(TableName.valueOf("powers"))) {
 			
 			//Update max versions for custom column family to 2
@@ -51,8 +51,10 @@ public class TablePartF{
 			
 			//2. Reading values from Result class object to retrieve all versions of all columns, with the most recent version coming first
 			
-			//Get row 7 using Get and Result classes
+			//Get row 7 using Get and Result classes, read at least 2 versions 
 			Get g = new Get(Bytes.toBytes("row7"));
+			//g.readAllVersions();
+			g.readVersions(2);
 			Result result = table.get(g);
 			
 			//Only gets latest version of each cell...
@@ -103,7 +105,7 @@ public class TablePartF{
             } */
 	  }
 	  catch (IOException e) {
-		  System.err.println("Error processing CSV file or HBase: " + e.getMessage());
+		  System.err.println("Error processing HBase: " + e.getMessage());
 	  }	
 
    }
@@ -115,3 +117,4 @@ public class TablePartF{
 // https://stackoverflow.com/questions/34909897/hbase-extracting-value-and-timestamp-from-a-cell
 // https://hbase.apache.org/book.html#schema.versions.max
 // https://stackoverflow.com/questions/64596319/trying-to-understand-updates-in-hbase
+// https://stackoverflow.com/questions/39272884/get-last-version-of-all-keys-in-hbase

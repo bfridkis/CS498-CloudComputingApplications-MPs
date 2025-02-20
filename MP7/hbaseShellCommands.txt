@@ -8,7 +8,7 @@ describe 'powers'
 describe 'food'
 
 disable 'powers'
-disable 'food'
 drop 'powers'
+disable 'food'
 drop 'food'
 

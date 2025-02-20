@@ -47,7 +47,7 @@ public class TablePartE{
 			System.out.println(result);
 	}
 	catch (IOException e) {
-		  System.err.println("Error processing CSV file or HBase: " + e.getMessage());
+		  System.err.println("Error processing HBase: " + e.getMessage());
 	  } 
    }
 }
