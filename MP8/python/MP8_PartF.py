@@ -41,10 +41,8 @@ df_years_filtered = df.filter(df['year'] >= 1500).filter(df['year'] <= 2000)
 
 w = Window.partitionBy("word").orderBy("year")
 df_word_increase_intermediate = df_years_filtered.withColumn("previous_frequency", lag("frequency", 1, 0).over(w))
-#df_years_filtered.withColumn("previous_value", lag("year", 1, 0).over(w)).show()
 
-#df_word_increase_intermediate.createOrReplaceTempView("books_with_frequency_increase")
-#spark.sql("Select * FROM books_with_frequency_increase ORDER BY previous_value DESC LIMIT 20").show()
-#spark.sql("Select word, SUM(previous_frequency) as total_increase FROM books_with_frequency_increase PARTITION BY word ORDER BY total_increase DESC LIMIT 20").show()
+df_word_increase_intermediate.createOrReplaceTempView("books_with_frequency_increase")
+spark.sql("Select DISTINCT word, SUM(previous_frequency) OVER(PARTITION BY word) as total_increase FROM books_with_frequency_increase ORDER BY total_increase DESC LIMIT 20").show()
 
 #df_word_increase.show()

@@ -45,7 +45,7 @@ df2.createOrReplaceTempView('gbooks2')
 #result = spark.sql("SELECT COUNT(*) FROM gbooks2 AS gb1 JOIN gbooks2 AS gb2 ON gb1.word != gb2.word AND gb1.year == gb2.year")
 result = spark.sql("SELECT COUNT(*) FROM gbooks2 AS gb1 JOIN gbooks2 AS gb2 ON gb1.year == gb2.year")
 
-result.first()['count(1)']
+print(result.first()['count(1)'])
 
 # Now we are going to perform a JOIN operation on 'df2'. Do a self-join on 'df2' in lines with the same #'count1' values and see how many lines this JOIN could produce. Answer this question via Spark SQL API
 
