@@ -44,7 +44,8 @@ df = spark.createDataFrame(rdd_split, schema)
 # Register the DataFrame as a SQL temporary view
 df.createOrReplaceTempView("books")
 
-spark.sql("Select word, COUNT(*) FROM books GROUP BY word ORDER BY COUNT(*) desc, word desc LIMIT 3").show()
+#spark.sql("Select word, COUNT(*) FROM books GROUP BY word ORDER BY COUNT(*) desc, word desc LIMIT 3").show()
+spark.sql("Select word, COUNT(*) FROM books GROUP BY word ORDER BY COUNT(*) desc, word desc").show(3)
 
 # Spark SQL
 
