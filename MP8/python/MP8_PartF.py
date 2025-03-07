@@ -39,10 +39,14 @@ df = spark.createDataFrame(rdd_split, schema)
 df_years_filtered = df.filter(df['year'] >= 1500).filter(df['year'] <= 2000)
 #df_years_filtered.createOrReplaceTempView("books_years_1500to2000")
 
-w = Window.partitionBy("word").orderBy("year")
+#w = Window.partitionBy("word").orderBy("year")
+w = Window.partitionBy("word").orderBy(desc("year"))
 df_word_increase_intermediate = df_years_filtered.withColumn("previous_frequency", lag("frequency", 1, 0).over(w))
 
 df_word_increase_intermediate.createOrReplaceTempView("books_with_frequency_increase")
 spark.sql("Select DISTINCT word, SUM(previous_frequency) OVER(PARTITION BY word) as total_increase FROM books_with_frequency_increase ORDER BY total_increase DESC LIMIT 20").show()
 
 #df_word_increase.show()
+
+# REFERENCES
+# https://www.google.com/search?q=pyspark.sql.Window.orderBy+reverse+order&rlz=1C1CHBF_enUS1071US1071&oq=pyspark.sql.Window.orderBy+reverse+order&gs_lcrp=EgZjaHJvbWUyCwgAEEUYChg5GKABMgkIARAhGAoYoAEyCQgCECEYChigAdIBCDI3MDNqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8
