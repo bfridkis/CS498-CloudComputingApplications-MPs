@@ -6,7 +6,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, when
 from pyspark.sql.types import IntegerType
 
 ## @params: [JOB_NAME]
@@ -38,9 +38,16 @@ spark_df = dynamic_frame.toDF(options={"inferSchema": "true"})
 # difference between the arrival and departure airports. You may need to check the
 # data type when doing the time zone difference calculations to get the correct values.
 # time_zone_difference = (f1.scheduled_arrival / 100)*60 + (f1.scheduled_arrival % 100) - ((f1.scheduled_departure / 100)*60 + (f1.scheduled_departure % 100) + f1.scheduled_time)%(24*60)
-spark_df_w_time_zone_difference = spark_df.withColumn("time_zone_difference", (spark_df.scheduled_arrival / 100).cast('int')*60 + \
-                                                                              (spark_df.scheduled_arrival % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
-                                                                              (spark_df.scheduled_departure % 100) + spark_df.scheduled_time)%(24*60))
+# spark_df_w_time_zone_difference = spark_df.withColumn("time_zone_difference", (((spark_df.scheduled_arrival / 100).cast('int')*60 + \
+                                                                              # (spark_df.scheduled_arrival % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
+                                                                              # (spark_df.scheduled_departure % 100) + spark_df.scheduled_time))%(24*60)))
+spark_df_w_time_zone_difference = spark_df.withColumn("time_zone_difference", when((col("scheduled_arrival") < col("scheduled_departure")) & (col("scheduled_departure") - col("scheduled_arrival") >= 1200), 
+                                                                                   ((((spark_df.scheduled_arrival+2400) / 100).cast('int')*60 + \
+                                                                                   ((spark_df.scheduled_arrival+2400) % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
+                                                                                   (spark_df.scheduled_departure % 100) + spark_df.scheduled_time))%(24*60)))
+                                                                             .otherwise(((spark_df.scheduled_arrival+2400 / 100).cast('int')*60 + \
+                                                                                        (spark_df.scheduled_arrival+2400 % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
+                                                                                        (spark_df.scheduled_departure % 100) + spark_df.scheduled_time))%(24*60)))
 
 # 5. Convert Spark data frame back to Glue dynamic frame
 # Note - you can do step 4 using AWS Glue dynamic frame APIs also if you want
@@ -86,3 +93,4 @@ job.commit()
 # https://stackoverflow.com/questions/53137425/create-dynamic-frame-from-catalog-returning-zero-results
 # https://stackoverflow.com/questions/33681487/how-do-i-add-a-new-column-to-a-spark-dataframe-using-pyspark
 # https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.withColumn.html
+# https://www.google.com/search?q=withColumn+conditional+logic+pyspark&rlz=1C1CHBF_enUS1071US1071&oq=withColumn+conditional+logic+pyspark&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIICAEQABgWGB4yDQgCEAAYhgMYgAQYigUyDQgDEAAYhgMYgAQYigUyDQgEEAAYhgMYgAQYigUyCggFEAAYgAQYogTSAQg3NDU0ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
