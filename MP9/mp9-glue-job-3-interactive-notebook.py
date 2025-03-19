@@ -80,9 +80,10 @@ from pyspark.sql.functions import col, when
 df_w_departure_time_bucket = df_no_dups.withColumn("DepartureTimeBucket", when(((col("departure_time")/ 100).cast('int') <= 5) & ((col("departure_time")/ 100).cast('int') <= 11), "Morning")
     .when(((col("departure_time")/ 100).cast('int') <= 12) & ((col("departure_time")/ 100).cast('int') <= 17), "Afternoon")
     .when((((col("departure_time")/ 100).cast('int') <= 18) & ((col("departure_time")/ 100).cast('int') <= 23)) | \
-          (((col("departure_time")/ 100).cast('int') <= 0) & ((col("departure_time")/ 100).cast('int') <= 4)), "Night")
+          ((((col("departure_time")/ 100).cast('int') <= 0) & ((col("departure_time")/ 100).cast('int') <= 4)) | ((col("departure_time")/ 100).cast('int') == 24)), "Night")
     .otherwise("Unknown"))
 
 #df_w_departure_time_bucket.select('departure_time', 'DepartureTimeBucket').show(10)
 
 df_w_departure_time_bucket.write.csv('s3://fridkis-mp9-flights-dataset/Transformed-Output/Glue-Job-3/', header=True, mode="overwrite")
+
