@@ -5,17 +5,17 @@ import json
 url = "https://7zb7o864ci.execute-api.us-east-1.amazonaws.com/prod/mp9-v3-autograder-test"
 
 student = {
-    "submitterEmail": "", #<Your coursera account email>
-    "secret": "" #<Your secret token from coursera>
+    "submitterEmail": "fridkis2@illinois.edu", #<Your coursera account email>
+    "secret": "puErclRxxFeOvPMX" #<Your secret token from coursera>
 }
 
 etl3_job1 = [71870, 9, 7] #<The deliverable (array)for Glue job 3, task 1: deduplication
 etl3_job2 = "C:\\Users\\Annjamin\\Documents\\Benj's Stuff\\UIUC MCS\\CS498-CloudComputingApplications\\CS498-CloudComputingApplications-MPs\\MP9\\Submission-Output\\TopTenRoutes.csv" #<The deliverable (string filepath) for Glue job 3, task 2: top n routes
 etl3_job3 = "day" #<The deliverable (string) for Glue job 3, task 3: correlation
 
-sql1_numFilteredEntries = 5923 #<The count of the filtered entries from 3.3 SQL query 1>
-sql2_numFilteredEntries =  #<The count of the filtered entries from 3.3 SQL query 2>
-sql3_numFilteredEntries = {} #<The time of day with most average delay, and the correponding avergae delay as a dictionary from 3.3 SQL query 3>
+sql1_numFilteredEntries = 184 #<The count of the filtered entries from 3.3 SQL query 1>
+sql2_numFilteredEntries = 19774 #<The count of the filtered entries from 3.3 SQL query 2>
+sql3_numFilteredEntries = {"Night":50} #<The time of day with most average delay, and the correponding avergae delay as a dictionary from 3.3 SQL query 3>
 
 viz0CsvPath = "" #<Filepath for your tableau viz0 csv/tsv file>
 viz1CsvPath = "" #<Filepath for your tableau viz1 csv/tsv file>
@@ -84,9 +84,9 @@ def sendToAutograder(payload):
 
 def main():
     topndata = route_analysis(etl3_job2, route, count)
-    viz0Data = readViz0(viz0CsvPath, viz0DestAirportColumn, viz0CountAirlineColumn, viz0LatitudeColumn, viz0LongitudeColumn)
-    viz1Data = readViz12(viz1CsvPath, viz1StopOverColumn)
-    viz2Data = readViz12(viz2CsvPath, viz2ArrivalDelayColumn)
+    viz0Data = {} # readViz0(viz0CsvPath, viz0DestAirportColumn, viz0CountAirlineColumn, viz0LatitudeColumn, viz0LongitudeColumn)
+    viz1Data = {} # readViz12(viz1CsvPath, viz1StopOverColumn)
+    viz2Data = {} # readViz12(viz2CsvPath, viz2ArrivalDelayColumn)
 
     payload = {}
     payload['student'] = student

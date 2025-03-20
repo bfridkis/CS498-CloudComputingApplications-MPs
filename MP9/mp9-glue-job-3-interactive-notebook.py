@@ -46,11 +46,13 @@ total_change_for_stddev = abs(departure_delay_stddev_wo_duplicates - departure_d
 
 from pyspark.sql.functions import concat_ws
 
-df_w_route = df.withColumn("route", concat_ws("-", "origin_airport", "destination_airport"))
+df_w_route = df_no_dups.withColumn("route", concat_ws("-", "origin_airport", "destination_airport"))
 #df_w_route.groupby('route').agg({'Route':'count'}).sort('count(Route)', ascending=False).withColumnRenamed('count(Route)', 'count').show(10)
 df_to_write = df_w_route.groupby('route').agg({'Route':'count'}).sort('count(Route)', ascending=False).withColumnRenamed('count(Route)', 'count').limit(10)
 
 df_to_write.write.csv('s3://fridkis-mp9-flights-dataset/Submission-Output/TopTenRoutes', header=True, mode="overwrite")
+
+df_to_write.show()
 
 # https://www.geeksforgeeks.org/how-to-add-a-new-column-to-a-pyspark-dataframe/
 # https://www.google.com/search?q=group+by+py+spark&rlz=1C1CHBF_enUS1071US1071&oq=group+by+py+spark&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIKCAEQABgKGBYYHjIICAIQABgWGB4yCggDEAAYChgWGB4yCAgEEAAYFhgeMggIBRAAGBYYHjIICAYQABgWGB4yCAgHEAAYFhgeMggICBAAGBYYHjIICAkQABgWGB7SAQg1NzY1ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
@@ -77,13 +79,16 @@ max(dd_correlations, key=dd_correlations.get)
 
 from pyspark.sql.functions import col, when
 
-df_w_departure_time_bucket = df_no_dups.withColumn("DepartureTimeBucket", when(((col("departure_time")/ 100).cast('int') <= 5) & ((col("departure_time")/ 100).cast('int') <= 11), "Morning")
-    .when(((col("departure_time")/ 100).cast('int') <= 12) & ((col("departure_time")/ 100).cast('int') <= 17), "Afternoon")
-    .when((((col("departure_time")/ 100).cast('int') <= 18) & ((col("departure_time")/ 100).cast('int') <= 23)) | \
-          ((((col("departure_time")/ 100).cast('int') <= 0) & ((col("departure_time")/ 100).cast('int') <= 4)) | ((col("departure_time")/ 100).cast('int') == 24)), "Night")
+df_w_departure_time_bucket = df_no_dups.withColumn("DepartureTimeBucket", when(((col("departure_time")/ 100).cast('int') >= 5) & ((col("departure_time")/ 100).cast('int') <= 11), "Morning")
+    .when(((col("departure_time")/ 100).cast('int') >= 12) & ((col("departure_time")/ 100).cast('int') <= 17), "Afternoon")
+    .when((((col("departure_time")/ 100).cast('int') >= 18) & ((col("departure_time")/ 100).cast('int') <= 23)) | \
+          ((((col("departure_time")/ 100).cast('int') >= 0) & ((col("departure_time")/ 100).cast('int') <= 4)) | ((col("departure_time")/ 100).cast('int') == 24)), "Night")
+          #(((col("departure_time")/ 100).cast('int') <= 0) & ((col("departure_time")/ 100).cast('int') <= 4)), "Night")
     .otherwise("Unknown"))
 
-#df_w_departure_time_bucket.select('departure_time', 'DepartureTimeBucket').show(10)
+#df_w_departure_time_bucket.select('departure_time', 'DepartureTimeBucket', (col("departure_time")/ 100).cast('int')).filter(col('DepartureTimeBucket') == 'Unknown').show(10)
+df_w_departure_time_bucket.select('departure_time', 'DepartureTimeBucket').show(10)
 
 df_w_departure_time_bucket.write.csv('s3://fridkis-mp9-flights-dataset/Transformed-Output/Glue-Job-3/', header=True, mode="overwrite")
+
 

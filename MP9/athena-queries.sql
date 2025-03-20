@@ -3,6 +3,7 @@
 SELECT Airline, Origin_Airport, Destination_Airport
 FROM " transformed-flights-data-3-glue_job_3"
 WHERE floor(departure_time/100) >= 8.0 AND floor(departure_time/100) < 12.0
+AND month = 12 AND day = 25
 AND origin_airport = 'ORD';
 
 -- -- 3.3.3-2 -- --
