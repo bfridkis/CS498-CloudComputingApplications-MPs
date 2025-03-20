@@ -60,3 +60,5 @@ scheduled_time = 59
 (scheduled_departure % 100) + scheduled_time))%(24*60)
 
 (int(scheduled_arrival / 100)*60 + (scheduled_arrival % 100) - (int(scheduled_departure / 100)*60 + (scheduled_departure % 100) + scheduled_time))%(24*60)
+
+(scheduled_arrival / 100)*60 + (scheduled_arrival % 100) - ((scheduled_departure / 100)*60 + (scheduled_departure % 100) + scheduled_time)%(24*60)
