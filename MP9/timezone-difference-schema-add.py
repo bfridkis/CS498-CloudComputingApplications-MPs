@@ -44,20 +44,27 @@ spark_df = dynamic_frame.toDF()
 # spark_df_w_time_zone_difference = spark_df.withColumn("time_zone_difference", (((spark_df.scheduled_arrival / 100).cast('int')*60 + \
                                                                               # (spark_df.scheduled_arrival % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
                                                                               # (spark_df.scheduled_departure % 100) + spark_df.scheduled_time))%(24*60)))
-# spark_df_w_time_zone_difference = spark_df.withColumn("time_zone_difference", when((col("scheduled_arrival") < col("scheduled_departure")) & (col("scheduled_departure") - col("scheduled_arrival") >= 1200), 
-                                                                                   # ((((spark_df.scheduled_arrival+2400) / 100).cast('int')*60 + \
+# spark_df_w_time_zone_difference = spark_df.withColumn("time_zone_difference", when(((col("scheduled_arrival") < col("scheduled_departure"))), 
+                                                                                   # (((spark_df.scheduled_arrival+2400) / 100).cast('int')*60 + \
                                                                                    # ((spark_df.scheduled_arrival+2400) % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
-                                                                                   # (spark_df.scheduled_departure % 100) + spark_df.scheduled_time))%(24*60)))
-                                                                             # .otherwise(((spark_df.scheduled_arrival+2400 / 100).cast('int')*60 + \
-                                                                                        # (spark_df.scheduled_arrival+2400 % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
-                                                                                        # (spark_df.scheduled_departure % 100) + spark_df.scheduled_time))%(24*60)))
-spark_df_w_time_zone_difference = spark_df.withColumn("time_zone_difference", when((col("scheduled_arrival") < col("scheduled_departure")) & (col("scheduled_time") >= 60), 
-                                                                                   ((((spark_df.scheduled_arrival+2400) / 100).cast('int')*60 + \
-                                                                                   ((spark_df.scheduled_arrival) % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
-                                                                                   (spark_df.scheduled_departure % 100) + spark_df.scheduled_time))%(24*60)))
-                                                                             .otherwise(((spark_df.scheduled_arrival / 100).cast('int')*60 + \
+                                                                                   # (spark_df.scheduled_departure % 100) + spark_df.scheduled_time)%(24*60)))
+                                                                             # .otherwise((spark_df.scheduled_arrival / 100).cast('int')*60 + \
+                                                                                        # (spark_df.scheduled_arrival % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
+                                                                                        # (spark_df.scheduled_departure % 100) + spark_df.scheduled_time)%(24*60)))
+spark_df_w_time_zone_difference = spark_df.withColumn("time_zone_difference", when(((col("scheduled_arrival") < col("scheduled_departure"))), 
+                                                                                   (((spark_df.scheduled_arrival+2400) / 100).cast('int')*60 + \
+                                                                                   ((spark_df.scheduled_arrival+2400) % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
+                                                                                   (spark_df.scheduled_departure % 100) + spark_df.scheduled_time)))
+                                                                             .otherwise((spark_df.scheduled_arrival / 100).cast('int')*60 + \
                                                                                         (spark_df.scheduled_arrival % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
-                                                                                        (spark_df.scheduled_departure % 100) + spark_df.scheduled_time))%(24*60)))
+                                                                                        (spark_df.scheduled_departure % 100) + spark_df.scheduled_time)%(24*60)))
+# spark_df_w_time_zone_difference = spark_df.withColumn("time_zone_difference", when((col("scheduled_arrival") < col("scheduled_departure")) & (col("scheduled_time") >= 60), 
+                                                                                   # ((((spark_df.scheduled_arrival+2400) / 100).cast('int')*60 + \
+                                                                                   # ((spark_df.scheduled_arrival) % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
+                                                                                   # (spark_df.scheduled_departure % 100) + spark_df.scheduled_time))%(24*60)))
+                                                                             # .otherwise(((spark_df.scheduled_arrival / 100).cast('int')*60 + \
+                                                                                        # (spark_df.scheduled_arrival % 100) - ((spark_df.scheduled_departure / 100).cast('int')*60 + \
+                                                                                        # (spark_df.scheduled_departure % 100) + spark_df.scheduled_time))%(24*60)))
 
 # 5. Convert Spark data frame back to Glue dynamic frame
 # Note - you can do step 4 using AWS Glue dynamic frame APIs also if you want
