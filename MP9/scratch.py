@@ -84,13 +84,13 @@ spark_df_w_time_zone_difference.agg({'time_zone_difference':'avg'}).show()
 spark_df_w_time_zone_difference.agg({'time_zone_difference':'max'}).show()
 spark_df_w_time_zone_difference.agg({'time_zone_difference':'max'}).show()
 
-scheduled_arrival = 630+2400
-scheduled_departure = 629
+scheduled_arrival = 628
+scheduled_departure = 623
 scheduled_time = 59
 
 (int(scheduled_arrival / 100)*60 + \
 (scheduled_arrival % 100) - (int(scheduled_departure / 100)*60 + \
-(scheduled_departure % 100) + scheduled_time))%(24*60)
+(scheduled_departure % 100) + scheduled_time)%(24*60)
 
 (int(scheduled_arrival / 100)*60 + (scheduled_arrival % 100) - (int(scheduled_departure / 100)*60 + (scheduled_departure % 100) + scheduled_time))%(24*60)
 
