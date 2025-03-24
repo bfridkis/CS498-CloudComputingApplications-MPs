@@ -6,7 +6,7 @@ url = "https://7zb7o864ci.execute-api.us-east-1.amazonaws.com/prod/mp9-v3-autogr
 
 student = {
     "submitterEmail": "fridkis2@illinois.edu", #<Your coursera account email>
-    "secret": "nXjxJiu7GIXroKl3" #<Your secret token from coursera>
+    "secret": "HtXwpa3s5CgPAayg" #<Your secret token from coursera>
 }
 
 etl3_job1 = [71870, 9, 7] #<The deliverable (array)for Glue job 3, task 1: deduplication
@@ -17,9 +17,11 @@ sql1_numFilteredEntries = 184 #<The count of the filtered entries from 3.3 SQL q
 sql2_numFilteredEntries = 1277 #<The count of the filtered entries from 3.3 SQL query 2>
 sql3_numFilteredEntries = {"Night":50} #<The time of day with most average delay, and the correponding avergae delay as a dictionary from 3.3 SQL query 3>
 
-viz0CsvPath = "" #<Filepath for your tableau viz0 csv/tsv file>
-viz1CsvPath = "" #<Filepath for your tableau viz1 csv/tsv file>
-viz2CsvPath = "" #<Filepath for your tableau viz2 csv/tsv file>
+viz0CsvPath = "C:\\Users\\Annjamin\\Documents\\Benj's Stuff\\UIUC MCS\\CS498-CloudComputingApplications\\CS498-CloudComputingApplications-MPs\\MP9\\Visualization-Output\\mp9-viz0.csv" #<Filepath for your tableau viz0 csv/tsv file>
+#viz0CsvPath = "C:\\Users\\Annjamin\\Documents\\Benj's Stuff\\UIUC MCS\\CS498-CloudComputingApplications\\CS498-CloudComputingApplications-MPs\\MP9\\Visualization-Output\\mp9-viz0-distinct.csv" #<Filepath for your tableau viz0 csv/tsv file>
+viz1CsvPath = "C:\\Users\\Annjamin\\Documents\\Benj's Stuff\\UIUC MCS\\CS498-CloudComputingApplications\\CS498-CloudComputingApplications-MPs\\MP9\\Visualization-Output\\mp9-viz1.csv" #<Filepath for your tableau viz1 csv/tsv file>
+#viz2CsvPath = "C:\\Users\\Annjamin\\Documents\\Benj's Stuff\\UIUC MCS\\CS498-CloudComputingApplications\\CS498-CloudComputingApplications-MPs\\MP9\\Visualization-Output\\mp9-viz2.csv" #<Filepath for your tableau viz2 csv/tsv file>
+viz2CsvPath = "C:\\Users\\Annjamin\\Documents\\Benj's Stuff\\UIUC MCS\\CS498-CloudComputingApplications\\CS498-CloudComputingApplications-MPs\\MP9\\Visualization-Output\\mp9-viz2-direct.csv" #<Filepath for your tableau viz2 csv/tsv file>
 
 route = 0
 count = 1
@@ -52,7 +54,7 @@ def readViz0(filePath, destAirportColumn, countAirlineColumn, latitudeColumn, lo
     vizData = {}
 
     with  open(filePath, encoding="utf8", errors='ignore') as csvfile:
-        reader = csv.reader((line.replace('\0','') for line in csvfile), delimiter='\t')
+        reader = csv.reader((line.replace('\0','') for line in csvfile), delimiter=',')
 
         header = reader.__next__()
 
@@ -67,7 +69,7 @@ def readViz12(filePath, keyColumn):
     valueColumn = int(not keyColumn)
 
     with  open(filePath, encoding="utf8", errors='ignore') as csvfile:
-        reader = csv.reader((line.replace('\0','') for line in csvfile), delimiter='\t')
+        reader = csv.reader((line.replace('\0','') for line in csvfile), delimiter=',')
 
         header = reader.__next__()
 
@@ -84,9 +86,9 @@ def sendToAutograder(payload):
 
 def main():
     topndata = route_analysis(etl3_job2, route, count)
-    viz0Data = {} # readViz0(viz0CsvPath, viz0DestAirportColumn, viz0CountAirlineColumn, viz0LatitudeColumn, viz0LongitudeColumn)
-    viz1Data = {} # readViz12(viz1CsvPath, viz1StopOverColumn)
-    viz2Data = {} # readViz12(viz2CsvPath, viz2ArrivalDelayColumn)
+    viz0Data = readViz0(viz0CsvPath, viz0DestAirportColumn, viz0CountAirlineColumn, viz0LatitudeColumn, viz0LongitudeColumn)
+    viz1Data = readViz12(viz1CsvPath, viz1StopOverColumn)
+    viz2Data = readViz12(viz2CsvPath, viz2ArrivalDelayColumn)
 
     payload = {}
     payload['student'] = student

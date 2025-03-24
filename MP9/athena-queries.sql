@@ -1,8 +1,12 @@
 -- -- 3.3.3-1 -- --
 --SELECT Airline, Origin_Airport, Destination_Airport, floor(departure_time/100) AS departure_hour
 SELECT Airline, Origin_Airport, Destination_Airport
+-- FROM " transformed-flights-data-3-glue_job_3"
 FROM " transformed-flights-data-3-glue_job_3"
-WHERE floor(departure_time/100) >= 8.0 AND floor(departure_time/100) < 12.0
+-- WHERE floor(departure_time/100) >= 8.0 AND floor(departure_time/100) < 12.0
+-- WHERE departure_time >= 800.0 AND departure_time < 1200.0
+WHERE scheduled_departure >= 800.0 AND scheduled_departure < 1200.0
+-- AND Destination_Airport = 'TPA'
 AND month = 12 AND day = 25
 AND origin_airport = 'ORD';
 
