@@ -155,8 +155,36 @@ SELECT * FROM (
     -- WHERE close_price < avg_close_price
     ) 
 ) WHERE close_price < ema_close_price
-)
+
+-- Exercise C
+%flink.ssql
+SELECT *
+FROM stock_table
+    MATCH_RECOGNIZE (
+      PARTITION BY ticker
+      ORDER BY event_time
+      MEASURES
+        A.event_time AS event_time,
+        A.`date` AS InitialPriceDate,
+        C.`date` AS dropDate,
+        -100*(C.close_price - A.close_price)/A.close_price AS dropPercentage,
+        A.close_price AS InitialPrice,
+        C.close_price AS lastPrice
+      ONE ROW PER MATCH
+      AFTER MATCH SKIP PAST LAST ROW
+      PATTERN (A B{0,2} C)
+      -- PATTERN (A+ B)
+      -- PATTERN (A B)
+      DEFINE
+        -- A AS A.close_price = 0  -- This wasn't behaving as expected, but not sure why...
+        -- A AS A.close_price > B.close_price AND A.close_price > C.close_price,  -- This wasn't working either, no matches... I think because it can't look ahead (e.g. can't compare A to B or C in A's definition but can do vis versa...)
+        -- A AS A.close_price > C.close_price, -- This wasn't working either, no matches... I think because it can't look ahead (e.g. can't compare A to B or C in A's definition but can do vis versa...)
+        B AS -100*(B.close_price - A.close_price)/A.close_price < 8.0,
+        -- C AS -100*(C.close_price - A.close_price)/A.close_price >= 8.0
+        C AS C.close_price < A.close_price AND -100*(C.close_price - A.close_price)/A.close_price >= 8.0
+) AS T
 
 -- REFERENCES
 -- https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/connectors/table/kinesis/
 -- https://docs.aws.amazon.com/managed-flink/latest/java/how-zeppelin-sql-examples.html#how-zeppelin-examples-creating-tables
+-- https://nightlies.apache.org/flink/flink-docs-release-2.0/docs/dev/table/sql/queries/match_recognize/
