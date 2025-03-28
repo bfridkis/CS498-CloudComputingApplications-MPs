@@ -130,28 +130,31 @@ WHERE t.cmgr <> 0
 -- Exercise B
 %flink.ssql
 /* stock prices of when the current price is lower than the moving average which would be a good indicator for a bear market*/
-SELECT ticker, `date`, close_price, avg_close_price, 
-exp((SUM(ln(close_price)) OVER (
-    PARTITION BY ticker
-    ORDER BY `event_time`
-    ROWS BETWEEN 9 PRECEDING AND CURRENT ROW
-    ))/10) AS ema_close_price
-FROM (
-    SELECT ticker, `date`, close_price, avg_close_price, event_time
+SELECT * FROM (    
+    SELECT ticker, `date`, close_price, avg_close_price, 
+    exp(((SUM(ln(close_price)) OVER (
+        PARTITION BY ticker
+        ORDER BY `event_time`
+        ROWS BETWEEN 9 PRECEDING AND CURRENT ROW
+        ))/10)) AS ema_close_price
     FROM (
-        SELECT
-            event_time,
-            `date`,
-            ticker,
-            close_price,
-            AVG(close_price) OVER (
-                PARTITION BY ticker
-                ORDER BY event_time
-                ROWS BETWEEN 9 PRECEDING AND CURRENT ROW
-            ) AS avg_close_price
-        FROM stock_table
-    ) t
-WHERE close_price < avg_close_price
+        SELECT ticker, `date`, close_price, avg_close_price, event_time
+        FROM (
+            SELECT
+                event_time,
+                `date`,
+                ticker,
+                close_price,
+                AVG(close_price) OVER (
+                    PARTITION BY ticker
+                    ORDER BY event_time
+                    ROWS BETWEEN 9 PRECEDING AND CURRENT ROW
+                ) AS avg_close_price
+            FROM stock_table
+        ) t
+    -- WHERE close_price < avg_close_price
+    ) 
+) WHERE close_price < ema_close_price
 )
 
 -- REFERENCES
