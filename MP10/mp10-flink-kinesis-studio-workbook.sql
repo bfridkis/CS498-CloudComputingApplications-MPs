@@ -118,12 +118,12 @@ st_env.create_temporary_function("to_cmgr", to_cmgr)
 -- Exercise A
 %flink.ssql(type=update)
 
-SELECT event_time, to_cmgr(close_price, `date`) AS cmgr, `date`, close_price FROM
+SELECT event_time, cmgr, `date`, close_price FROM
 (
     SELECT event_time, to_cmgr(close_price, `date`) AS cmgr, `date`, close_price 
     FROM stock_table
-) AS t
-WHERE t.cmgr <> 0
+)
+WHERE cmgr <> 0
 
 ----------------------
 

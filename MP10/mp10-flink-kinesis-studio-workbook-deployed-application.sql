@@ -2,6 +2,8 @@
 
 %flink.ssql(type=update)
 
+DROP TABLE IF EXISTS stock_table;
+
 -- create a table to glue data catalog table with columns for stock data, 
 -- sets a watermark to trigger late arrival events, and configures it to read 
 -- from a Kinesis stream, in JSON format with an ISO-8601 timestamp format.
@@ -30,11 +32,25 @@ DROP TABLE IF EXISTS part_a;
 DROP TABLE IF EXISTS part_b;
 DROP TABLE IF EXISTS part_c;
 CREATE TABLE part_a(event_time TIMESTAMP(3), cmgr FLOAT, `date` STRING, close_price FLOAT) 
-WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part_a','format' = 'json','json.timestamp-format.standard' = 'ISO-8601');
+WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part_a/','format' = 'json','json.timestamp-format.standard' = 'ISO-8601');
 CREATE TABLE part_b(ticker VARCHAR(6), `date` STRING, close_price FLOAT, avg_close_price FLOAT, ema_close_price DOUBLE)
-WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part_b','format' = 'json','json.timestamp-format.standard' = 'ISO-8601');
+WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part_b/','format' = 'json','json.timestamp-format.standard' = 'ISO-8601');
 CREATE TABLE part_c(ticker VARCHAR(6), event_time TIMESTAMP(3), initialPriceDate STRING, dropDate STRING, dropPercentage DOUBLE, initialPrice FLOAT, lastPrice FLOAT)
-WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part_c','format' = 'json','json.timestamp-format.standard' = 'ISO-8601');
+WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part_c/','format' = 'json','json.timestamp-format.standard' = 'ISO-8601');
+
+-- Testing only
+--DROP TABLE IF EXISTS part_test;
+--CREATE TABLE part_test(ticker VARCHAR(6), avg_close_price FLOAT, initialPriceDate STRING, dropDate STRING, dropPercentage DOUBLE, initialPrice FLOAT, lastPrice FLOAT)
+--WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part_test/','format' = 'json','json.timestamp-format.standard' = 'ISO-8601');
+--INSERT INTO part_test (ticker, avg_close_price, initialPriceDate, dropDate, dropPercentage, initialPrice, lastPrice) Values ('AMD', 92.70, '3/29/2025', '3/29/2025', 50.50, 60.50, 70.50);
+
+-- Testing Only (test 2 - simple insert into select test)
+--DROP TABLE IF EXISTS part_test2;
+--CREATE TABLE part_test2(ticker VARCHAR(6), close_price FLOAT)
+--WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part_test2/','format' = 'json','json.timestamp-format.standard' = 'ISO-8601');
+--INSERT INTO part_test2 (ticker, close_price)
+--    SELECT ticker, close_price FROM stock_table
+--;
 
 ----------------------
 
@@ -76,12 +92,12 @@ st_env.create_temporary_function("to_cmgr", to_cmgr)
 %flink.ssql(runAsOne=True)
 
 INSERT INTO part_a
-    SELECT event_time, to_cmgr(close_price, `date`) AS cmgr, `date`, close_price FROM
+    SELECT event_time, cmgr, `date`, close_price FROM
     (
         SELECT event_time, to_cmgr(close_price, `date`) AS cmgr, `date`, close_price 
         FROM stock_table
-    ) AS t
-    WHERE t.cmgr <> 0
+    )
+    WHERE cmgr <> 0
 ;
 
 INSERT INTO part_b
