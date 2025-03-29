@@ -48,6 +48,7 @@ WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part
 --DROP TABLE IF EXISTS part_test2;
 --CREATE TABLE part_test2(ticker VARCHAR(6), close_price FLOAT)
 --WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part_test2/','format' = 'json','json.timestamp-format.standard' = 'ISO-8601');
+--INSERT INTO part_test2 (ticker, close_price) Values ('AMD', 92.70);
 --INSERT INTO part_test2 (ticker, close_price)
 --    SELECT ticker, close_price FROM stock_table
 --;
@@ -55,6 +56,14 @@ WITH ('connector' = 'filesystem','path' = 's3://mp10-flink-application-code/part
 ----------------------
 
 -- Paragraph 2
+
+%flink.ssql(type=update)
+
+DROP TEMPORARY FUNCTION IF EXISTS to_cmgr;
+
+----------------------
+
+-- Paragraph 3
 
 %flink.pyflink
 
@@ -84,10 +93,9 @@ def to_cmgr(close_price: float, date: str) -> float:
 # Register the custom function with a name
 st_env.create_temporary_function("to_cmgr", to_cmgr)
 
-
 ----------------------
 
--- Paragraph 3
+-- Paragraph 4
 
 %flink.ssql(runAsOne=True)
 

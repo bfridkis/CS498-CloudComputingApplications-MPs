@@ -188,3 +188,4 @@ FROM stock_table
 -- https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/connectors/table/kinesis/
 -- https://docs.aws.amazon.com/managed-flink/latest/java/how-zeppelin-sql-examples.html#how-zeppelin-examples-creating-tables
 -- https://nightlies.apache.org/flink/flink-docs-release-2.0/docs/dev/table/sql/queries/match_recognize/
+-- https://nightlies.apache.org/flink/flink-docs-master/docs/dev/python/table_api_tutorial/
