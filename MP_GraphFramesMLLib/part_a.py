@@ -32,7 +32,8 @@ def get_connected_components(graphframe):
 if __name__ == "__main__":
     vertex_list = []
     edge_list = []
-    with open('/MP_GraphFramesMLLib/dataset/graph.data') as f:  # DO NOT MODIFY
+    #with open('/MP_GraphFramesMLLib/dataset/graph.data') as f:  # DO NOT MODIFY
+    with open('dataset/graph.data') as f:  # DO NOT MODIFY
         for line in f:
             nodes = line.split()
             src = nodes[0]  # TODO: Parse src from line
