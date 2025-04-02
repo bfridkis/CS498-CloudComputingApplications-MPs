@@ -1,5 +1,6 @@
 from pyspark import *
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import collect_list
 from graphframes import *
 
 sc = SparkContext()
@@ -39,3 +40,4 @@ if __name__ == "__main__":
         
 # https://www.google.com/search?q=how+to+build+a+graphframe+pyspark&rlz=1C1CHBF_enUS1071US1071&oq=how+to+build+a+graphframe+pyspark&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORigATIHCAEQIRigATIHCAIQIRigATIHCAMQIRiPAtIBCTE1Mzk0ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
 # https://graphframes.github.io/graphframes/docs/_site/index.html
+# https://www.google.com/search?q=how+to+output+all+values+for+grouped+data+pyspark+dataframe&sca_esv=62d75a41637246f2&rlz=1C1CHBF_enUS1071US1071&ei=w17tZ4OqHfeO0PEP6uT2uQ8&oq=how+to+output+all+values+for+grouped+data+pyspark+dat&gs_lp=Egxnd3Mtd2l6LXNlcnAiNWhvdyB0byBvdXRwdXQgYWxsIHZhbHVlcyBmb3IgZ3JvdXBlZCBkYXRhIHB5c3BhcmsgZGF0KgIIADIFECEYoAEyBRAhGKABMgUQIRigAUjVO1AAWK0ycAB4AZABAJgBmQKgAY1FqgEHMC4xNi4yNrgBA8gBAPgBAZgCKqACsUbCAgUQABiABMICBhAAGBYYHsICCBAAGBYYChgewgILEAAYgAQYhgMYigXCAggQABiABBiiBMICBRAAGO8FwgIIEAAYogQYiQXCAgUQIRirAsICBRAhGJ8FmAMAkgcHMC4xMi4zMKAHhqkCsgcHMC4xMi4zMLgHsUY&sclient=gws-wiz-serp
