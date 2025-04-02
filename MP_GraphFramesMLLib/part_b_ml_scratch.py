@@ -28,11 +28,11 @@ def get_clusters(df, num_clusters, max_iterations, initialization_mode,
     # "Hyundai" should have the same cluster id
     
     #Establish and train kmeans model
-    kmeans = KMeans(k=4, seed=0, maxIter=100, initMode="random")
+    kmeans = KMeans(k=NUM_CLUSTERS, seed=SEED, maxIter=MAX_ITERATIONS, initMode=INITIALIZATION_MODE)
     model = kmeans.fit(df)
     
     #Make predictions
-    predictions = model.transform(transformed_df)
+    predictions = model.transform(df)
     
     #Establish list for return data
     list_of_k_groups = []
