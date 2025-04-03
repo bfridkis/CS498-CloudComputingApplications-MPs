@@ -33,7 +33,9 @@ if __name__ == "__main__":
     f = sc.textFile("/MP_GraphFramesMLLib/dataset/cars.data")
 
     # TODO: Parse data from file into an RDD
-    data_rdd = f.map(lambda line: array([x if x == line.split(',')[0] else float(x) for x in line.split(',')]))
+    rdd = f.map(lambda line: array([x if x == line.split(',')[0] else float(x) for x in line.split(',')]))
+    rdd_names = rdd.map(lambda x : x[0])
+    rdd_features = rdd.map(lambda x : list(x[1:])).map(array)
     clusters = get_clusters(data_rdd)
 
     for cluster in clusters:

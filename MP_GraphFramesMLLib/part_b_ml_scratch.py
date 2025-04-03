@@ -54,7 +54,6 @@ def parse_line(line):
     return tuple((field if field == line.split(',')[0] else float(field) for field in line.split(',')))
     #return []
 
-#f = sc.textFile("dataset/cars.data")
 f = sc.textFile("/MP_GraphFramesMLLib/dataset/cars.data")
 
 rdd = f.map(parse_line)
@@ -64,10 +63,11 @@ data = rdd.collect()
 columns = ["id", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11"]
 df = spark.createDataFrame(data, columns)
 
+#Use VectorAssembler to assemble all features into a vector
 assembler = VectorAssembler(inputCols=[f"f{x}" for x in range(1,12)], outputCol="features")
 transformed_df = assembler.transform(df)
 
 clusters = get_clusters(transformed_df, NUM_CLUSTERS, MAX_ITERATIONS,
-						INITIALIZATION_MODE, SEED)
+                        INITIALIZATION_MODE, SEED)
 for cluster in clusters:
-	print(','.join(cluster))
+    print(','.join(cluster))
