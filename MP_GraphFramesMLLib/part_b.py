@@ -31,30 +31,26 @@ def get_clusters(df, num_clusters, max_iterations, initialization_mode,
     # "Hyundai" should have the same cluster id
     
     #Establish and train kmeans model
-    kmeans = KMeans(k=NUM_CLUSTERS, seed=seed, maxIter=max_iterations, initMode=initialization_mode)
+    kmeans = KMeans(k=num_clusters, seed=seed, maxIter=max_iterations, initMode=initialization_mode)
     model = kmeans.fit(df)
     
     #Make predictions
     predictions = model.transform(df)
     
     #Aggregate predictions
-    aggregated = predictions.groupBy('prediction').agg(F.collect_list("id")).withColumnRenamed("collect_list(id)", "names")
+    clusters = predictions.groupBy('prediction').agg(F.collect_list("title").alias("titles"))
     
-    #Load list_of_connected_components with results
-    list_of_k_groups = []
-    for row in aggregated.collect():
-        list_of_k_groups.append(row.asDict()['names'])
-    
-    return list_of_k_groups
+    return [row["titles"] for row in clusters.collect()]
 
 
 def parse_line(line):
     # TODO: Parse data from line into an RDD
     # Hint: Look at the data format and columns required by the KMeans fit and
     # transform functions
-    
-    features = line.split(",")
-    return [features[0], Vectors.dense([float(_) for _ in features[1:]])]
+    parts = line.split(",")
+    title = parts[0]
+    features = Vectors.dense([float(x) for x in parts[1:]])
+    return (title, features)
     #return []
 
 
@@ -65,15 +61,13 @@ if __name__ == "__main__":
     rdd = f.map(parse_line)
 
     # TODO: Convert RDD into a dataframe
-    data = rdd.collect()
-    columns = ["id", "features"]
-    df = spark.createDataFrame(data, columns)
+    df = rdd.toDF(["title", "features"])
     
     #Use VectorAssembler to assemble all features into a vector
     #assembler = VectorAssembler(inputCols=[f"f{x}" for x in range(1,12)], outputCol="features")
     #transformed_df = assembler.transform(df)
 
-    clusters = get_clusters(df, NUM_CLUSTERS, MAX_ITERATIONS,INITIALIZATION_MODE, SEED)
+    clusters = get_clusters(df, NUM_CLUSTERS, MAX_ITERATIONS, INITIALIZATION_MODE, SEED)
     for cluster in clusters:
         print(','.join(cluster))
 
