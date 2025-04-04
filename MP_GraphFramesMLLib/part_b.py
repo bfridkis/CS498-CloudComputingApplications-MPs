@@ -31,18 +31,19 @@ def get_clusters(df, num_clusters, max_iterations, initialization_mode,
     # "Hyundai" should have the same cluster id
     
     #Establish and train kmeans model
-    kmeans = KMeans(k=NUM_CLUSTERS, seed=SEED, maxIter=MAX_ITERATIONS, initMode=INITIALIZATION_MODE)
+    kmeans = KMeans(k=NUM_CLUSTERS, seed=seed, maxIter=max_iterations, initMode=initialization_mode)
     model = kmeans.fit(df)
     
     #Make predictions
     predictions = model.transform(df)
     
-    #Establish list for return data
-    list_of_k_groups = []
+    #Aggregate predictions
+    aggregated = predictions.groupBy('prediction').agg(F.collect_list("id")).withColumnRenamed("collect_list(id)", "names")
     
     #Load list_of_connected_components with results
-    for row in predictions.select(["id", "prediction"]).groupby('prediction').agg(collect_list('id').alias('cluster_neighbors')).select('cluster_neighbors').collect():
-        list_of_k_groups.append(row.asDict()['cluster_neighbors'])
+    list_of_k_groups = []
+    for row in aggregated.collect():
+        list_of_k_groups.append(row.asDict()['names'])
     
     return list_of_k_groups
 
@@ -52,7 +53,8 @@ def parse_line(line):
     # Hint: Look at the data format and columns required by the KMeans fit and
     # transform functions
     
-    return tuple((field if field == line.split(',')[0] else float(field) for field in line.split(',')))
+    features = line.split(",")
+    return [features[0], Vectors.dense([float(_) for _ in features[1:]])]
     #return []
 
 
@@ -64,15 +66,14 @@ if __name__ == "__main__":
 
     # TODO: Convert RDD into a dataframe
     data = rdd.collect()
-    columns = ["id", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11"]
+    columns = ["id", "features"]
     df = spark.createDataFrame(data, columns)
     
     #Use VectorAssembler to assemble all features into a vector
-    assembler = VectorAssembler(inputCols=[f"f{x}" for x in range(1,12)], outputCol="features")
-    transformed_df = assembler.transform(df)
+    #assembler = VectorAssembler(inputCols=[f"f{x}" for x in range(1,12)], outputCol="features")
+    #transformed_df = assembler.transform(df)
 
-    clusters = get_clusters(transformed_df, NUM_CLUSTERS, MAX_ITERATIONS,
-                            INITIALIZATION_MODE, SEED)
+    clusters = get_clusters(df, NUM_CLUSTERS, MAX_ITERATIONS,INITIALIZATION_MODE, SEED)
     for cluster in clusters:
         print(','.join(cluster))
 
@@ -81,3 +82,4 @@ if __name__ == "__main__":
 # https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.ml.clustering.KMeans.html
 # https://www.google.com/search?q=data+format+and+columns+needed+by+pyspark+kmeans+fit&rlz=1C1CHBF_enUS1071US1071&oq=data+format+and+columns+needed+by+pyspark+kmeans+fit&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQABjvBTIHCAIQABjvBTIKCAMQABiiBBiJBTIHCAQQABjvBdIBCTEyMjg2ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
 # https://www.google.com/search?q=kmeans+using+rdd+based+api+pyspark+named+points&sca_esv=57c84f4e1d2307b7&rlz=1C1CHBF_enUS1071US1071&ei=E8LtZ_LODYrKwN4P-Ynl6QM&ved=0ahUKEwiypOe0urqMAxUKJdAFHflEOT0Q4dUDCBA&uact=5&oq=kmeans+using+rdd+based+api+pyspark+named+points&gs_lp=Egxnd3Mtd2l6LXNlcnAiL2ttZWFucyB1c2luZyByZGQgYmFzZWQgYXBpIHB5c3BhcmsgbmFtZWQgcG9pbnRzMgoQIRigARjDBBgKSLsPUNwJWNgOcAJ4AZABAJgBeqABsASqAQMwLjW4AQPIAQD4AQGYAgWgAt0CwgIKEAAYsAMY1gQYR8ICCBAhGKABGMMEmAMAiAYBkAYIkgcDMi4zoAfhELIHAzAuM7gH0QI&sclient=gws-wiz-serp
+# https://www.google.com/search?q=kmeans+clustering+python+pyspark+ml+with+point+name&sca_esv=5d14021b5f0ff6fa&rlz=1C1CHBF_enUS1071US1071&ei=IeDvZ5KuCfSCp84PpJyJ0Qk&ved=0ahUKEwjSwsetv76MAxV0wckDHSROIpoQ4dUDCBA&uact=5&oq=kmeans+clustering+python+pyspark+ml+with+point+name&gs_lp=Egxnd3Mtd2l6LXNlcnAiM2ttZWFucyBjbHVzdGVyaW5nIHB5dGhvbiBweXNwYXJrIG1sIHdpdGggcG9pbnQgbmFtZTIFECEYoAFItBpQvgNYtBlwA3gBkAEAmAGcAaAB8RKqAQQwLjE3uAEDyAEA-AEBmAIUoALJE8ICChAAGLADGNYEGEfCAgUQIRirAsICBRAhGJ8FmAMAiAYBkAYIkgcEMy4xN6AH3GWyBwQwLjE3uAesEw&sclient=gws-wiz-serp

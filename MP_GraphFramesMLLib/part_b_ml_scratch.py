@@ -71,3 +71,15 @@ clusters = get_clusters(transformed_df, NUM_CLUSTERS, MAX_ITERATIONS,
                         INITIALIZATION_MODE, SEED)
 for cluster in clusters:
     print(','.join(cluster))
+    
+    
+    
+# From Saharsh
+#aggregated = transformed.groupBy('prediction').agg(F.collect_list("name"))
+aggregated = predictions.groupBy('prediction').agg(F.collect_list("id"))
+aggregated = aggregated.withColumnRenamed("collect_list(id)", "names")
+
+return aggregated.rdd.map(lambda x: x[1]).collect()
+def parse_line(line):
+    features = line.split(",")
+    return [features[0], Vectors.dense([float(_) for _ in features[1:]])]
