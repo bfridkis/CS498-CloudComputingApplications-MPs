@@ -16,7 +16,7 @@ INITIALIZATION_MODE = "random"
 sc = SparkContext()
 
 
-def get_clusters(data_rdd, num_clusters=NUM_CLUSTERS, max_iterations=MAX_ITERATIONS,
+def get_clusters(rdd_features, num_clusters=NUM_CLUSTERS, max_iterations=MAX_ITERATIONS,
                  initialization_mode=INITIALIZATION_MODE, seed=SEED):
     # TODO:
     # Use the given data and the cluster pparameters to train a K-Means model
@@ -25,6 +25,10 @@ def get_clusters(data_rdd, num_clusters=NUM_CLUSTERS, max_iterations=MAX_ITERATI
     # For example, if the output is [["Mercedes", "Audi"], ["Honda", "Hyundai"]]
     # Then "Mercedes" and "Audi" should have the same cluster id, and "Honda" and
     # "Hyundai" should have the same cluster id
+    
+    kmeans_clusters = KMeans.train(rdd_features, k=NUM_CLUSTERS, maxIterations=MAX_ITERATIONS, seed=SEED, initializationMode=INITIALIZATION_MODE)
+    predictions = rdd_features.map(lambda x : kmeans_clusters.predict(x))
+    
     return [[]]
 
 
@@ -36,7 +40,8 @@ if __name__ == "__main__":
     rdd = f.map(lambda line: array([x if x == line.split(',')[0] else float(x) for x in line.split(',')]))
     rdd_names = rdd.map(lambda x : x[0])
     rdd_features = rdd.map(lambda x : list(x[1:])).map(array)
-    clusters = get_clusters(data_rdd)
+    
+    clusters = get_clusters(rdd_features)
 
     for cluster in clusters:
         print(','.join(cluster))
