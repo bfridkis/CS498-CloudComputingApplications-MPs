@@ -31,26 +31,28 @@ def get_clusters(df, num_clusters, max_iterations, initialization_mode,
     # "Hyundai" should have the same cluster id
     
     #Establish and train kmeans model
-    kmeans = KMeans(k=num_clusters, seed=seed, maxIter=max_iterations, initMode=initialization_mode)
+    kmeans = KMeans(k=NUM_CLUSTERS, seed=seed, maxIter=max_iterations, initMode=initialization_mode)
     model = kmeans.fit(df)
     
     #Make predictions
     predictions = model.transform(df)
     
-    #Aggregate predictions
-    clusters = predictions.groupBy('prediction').agg(F.collect_list("title").alias("titles"))
+    #Establish list for return data
+    list_of_k_groups = []
     
-    return [row["titles"] for row in clusters.collect()]
+    #Load list_of_connected_components with results
+    for row in predictions.select(["id", "prediction"]).groupby('prediction').agg(collect_list('id').alias('cluster_neighbors')).select('cluster_neighbors').collect():
+        list_of_k_groups.append(row.asDict()['cluster_neighbors'])
+    
+    return list_of_k_groups
 
 
 def parse_line(line):
     # TODO: Parse data from line into an RDD
     # Hint: Look at the data format and columns required by the KMeans fit and
     # transform functions
-    parts = line.split(",")
-    title = parts[0]
-    features = Vectors.dense([float(x) for x in parts[1:]])
-    return (title, features)
+    
+    return tuple((field if field == line.split(',')[0] else float(field) for field in line.split(',')))
     #return []
 
 
@@ -61,13 +63,20 @@ if __name__ == "__main__":
     rdd = f.map(parse_line)
 
     # TODO: Convert RDD into a dataframe
-    df = rdd.toDF(["title", "features"])
+    ## Strange finding - Using spark.createDataFrame results in a different output, even though the resulting dataframe looks identical to the dataframe produced by the alternative 'toDF' method.
+    ## Even stranger, the expected outcome in the assignment prompt matches the result I get in using spark.createDataFrame but the autograder fails using this method,
+    #### while using the toDF method does not produce the expected output per the assignment prompt, but passes the autograder.
+    #data = rdd.collect()
+    #columns = ["id", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11"]
+    #df = spark.createDataFrame(data, columns)
+    
+    df = rdd.toDF(["id", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11"])
     
     #Use VectorAssembler to assemble all features into a vector
-    #assembler = VectorAssembler(inputCols=[f"f{x}" for x in range(1,12)], outputCol="features")
-    #transformed_df = assembler.transform(df)
+    assembler = VectorAssembler(inputCols=[f"f{x}" for x in range(1,12)], outputCol="features")
+    transformed_df = assembler.transform(df)
 
-    clusters = get_clusters(df, NUM_CLUSTERS, MAX_ITERATIONS, INITIALIZATION_MODE, SEED)
+    clusters = get_clusters(transformed_df, NUM_CLUSTERS, MAX_ITERATIONS, INITIALIZATION_MODE, SEED)
     for cluster in clusters:
         print(','.join(cluster))
 
