@@ -6,41 +6,50 @@ RUN mkdir -p /usr/src/app
 # Setting Home Directory for containers
 WORKDIR /usr/src/app
 
-# Copy src python files
-COPY /home/ec2-user/MP12/.py /usr/src/app/
-
 # Installing python dependencies
-COPY /home/ec2-user/MP12/requirements.txt /usr/src/app/
-RUN pip install -r requirements.txt
+# COPY /home/ec2-user/MP12/requirements.txt /usr/src/app/
+COPY requirements.txt /usr/src/app/
+RUN python -m pip install --upgrade pip
+RUN python -m pip cache purge
+RUN pip install -r requirements.txt --no-cache-dir
+
+# Copy src python files
+#COPY /home/ec2-user/MP12/.py /usr/src/app/
+COPY *.py /usr/src/app/
 
 # create directories for models and data
 RUN mkdir /usr/src/app/data
 RUN mkdir /usr/src/app/models
 
 # Preload the data
-RUN data_preload.py
+## Need to manually copy KMNIST files because the download via python in script below isn't working (direct download via browser is...)
+RUN mkdir -p /usr/src/app/data/MNIST/raw/
+COPY MNIST/raw/* /usr/src/app/data/MNIST/raw
+RUN mkdir -p /usr/src/app/data/KMNIST/raw/
+COPY KMNIST/raw/* /usr/src/app/data/KMNIST/raw
+RUN python /usr/src/app/data_preload.py
 
 # Pretrain the models
 
 ## Model 1
 ENV DATASET="mnist"
 ENV TYPE="ff"
-RUN train.py
+RUN python train.py
 
 ## Model 2
 ENV DATASET="mnist"
 ENV TYPE="cnn"
-RUN train.py
+RUN python train.py
 
 ## Model 3
 ENV DATASET="kmnist"
 ENV TYPE="ff"
-RUN train.py
+RUN python train.py
 
 ## Model 4
 ENV DATASET="kmnist"
 ENV TYPE="cnn"
-RUN train.py
+RUN python train.py
 
 # Running Python Application
 CMD ["python", "classify.py"]
@@ -53,3 +62,4 @@ CMD ["python", "classify.py"]
 ## https://www.google.com/search?q=difference+between+using+RUN+and+CMD+to+launch+python+script+dockerfile&rlz=1C1CHBF_enUS1071US1071&oq=difference+between+using+RUN+and+CMD+to+launch+python+script+dockerfile&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCTEwNDE1ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
 ## https://www.google.com/search?q=using+RUN+for+python+script+in+dockerfile&rlz=1C1CHBF_enUS1071US1071&oq=using+RUN+for+python+script+in+dockerfile&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORigATIHCAEQIRigATIHCAIQIRigATIHCAMQIRigATIHCAQQIRigATIHCAUQIRiPAjIHCAYQIRiPAjIHCAcQIRiPAtIBCDU3NDNqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8
 ## https://www.google.com/search?q=how+to+set+environment+variables+dockerfile&rlz=1C1CHBF_enUS1071US1071&oq=how+to+set+environment+variables+dockerfile&gs_lcrp=EgZjaHJvbWUyCggAEEUYFhgeGDkyBwgBEAAYgAQyCAgCEAAYFhgeMggIAxAAGBYYHjIICAQQABgWGB4yCAgFEAAYFhgeMggIBhAAGBYYHjIICAcQABgWGB4yCAgIEAAYFhgeMggICRAAGBYYHtIBCDU3NDJqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8
+## https://docs.docker.com/get-started/docker-concepts/building-images/using-the-build-cache/

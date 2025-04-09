@@ -1,0 +1,2 @@
+docker build -t mp12-image .
+docker run -it mp12-image
