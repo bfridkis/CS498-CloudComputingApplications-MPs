@@ -1,2 +1,24 @@
+# Build image
 docker build -t mp12-image .
+
+# Run image
 docker run -it mp12-image
+
+# Login to dockerhub from cli
+docker login
+
+# List images
+docker image ls
+
+# Tag an image (i.e., tag a locally created image with the same name as a repo established in dockerhub, enabling push [see next command])
+docker tag mp12-image bfridthekid/cs498-mp12
+
+# Push an image to dockerhub
+docker push bfridthekid/cs498-mp12
+
+
+
+# References
+# https://docs.docker.com/get-started/introduction/build-and-push-first-image/
+# https://www.google.com/search?q=how+to+push+a+local+docker+image+to+dockerhub&rlz=1C1CHBF_enUS1071US1071&oq=how+to+push+a+local+docker+image+to+dockerhub&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIICAEQABgNGB4yDQgCEAAYhgMYgAQYigUyDQgDEAAYhgMYgAQYigUyDQgEEAAYhgMYgAQYigUyBwgFEAAY7wUyCggGEAAYgAQYogQyCggHEAAYogQYiQUyBwgIEAAY7wUyBwgJEAAY7wXSAQg4NDkyajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
+# https://stackoverflow.com/questions/41984399/docker-push-error-denied-requested-access-to-the-resource-is-denied
