@@ -43,7 +43,7 @@ ENV TYPE="cnn"
 RUN train.py
 
 # Running Python Application
-CMD ["python", "server.py"]
+CMD ["python", "classify.py"]
 
 ## References
 ## https://stackoverflow.com/questions/53918841/how-to-install-docker-on-amazon-linux2
