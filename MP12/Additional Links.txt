@@ -1,0 +1,3 @@
+Additional Links:
+
+https://www.youtube.com/watch?app=desktop&v=u-md2C4IDD0 - AWS EKS Setup from a YAML file
