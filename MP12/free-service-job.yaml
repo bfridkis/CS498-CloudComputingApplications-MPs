@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: free-service-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: free-service-container
+        image: bfridthekid/cs498-mp12:latest
+        env:
+        - name: DATASET
+          value: "mnist"
+        - name: TYPE
+          value: "ff"
+        resources:
+          requests:
+            cpu: 0.9
+          limits:
+            cpu: 0.9
+      restartPolicy: Never
+      imagePullSecrets:
+      - name: regcred

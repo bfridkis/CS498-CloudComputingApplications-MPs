@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: premium-service-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: premium-service-container
+        image: bfridthekid/cs498-mp12:latest
+        env:
+        - name: DATASET
+          value: "kmnist"
+        - name: TYPE
+          value: "cnn"
+        resources:
+          requests:
+            cpu: 0.9
+          limits:
+            cpu: 0.9
+      restartPolicy: Never
+      imagePullSecrets:
+      - name: regcred

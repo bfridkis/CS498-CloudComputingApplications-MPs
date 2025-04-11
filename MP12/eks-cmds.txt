@@ -1,1 +1,11 @@
+# Create cluster
+eksctl create cluster -f cluster.yaml
+
+# Get cluster
 eksctl get cluster --region us-east-1
+
+# Get nodegroup
+eksctl get nodegroup --cluster mp12-cluster --region us-east-1
+
+# Scale cluster based on yaml file
+eksctl scale nodegroup ng-1 -f cluster.yaml

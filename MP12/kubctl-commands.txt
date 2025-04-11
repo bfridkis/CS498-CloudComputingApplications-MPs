@@ -1,0 +1,58 @@
+kubectl create namespace "free-service"
+
+kubectl get namespace
+
+kubectl apply -f ResourceQuota.yaml --namespace=free-service
+
+kubectl get resourcequota --namespace=free-service
+
+kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=bfridthekid --docker-password=<dockerhub_password> --docker-email=bfridkis@gmail.com
+
+kubectl create secret docker-registry regcred-free --docker-server=https://index.docker.io/v1/ --docker-username=bfridthekid --docker-password=<dockerhub_password> --docker-email=bfridkis@gmail.com -n free-service
+kubectl create secret docker-registry regcred-premium --docker-server=https://index.docker.io/v1/ --docker-username=bfridthekid --docker-password=<dockerhub_password> --docker-email=bfridkis@gmail.com -n default
+
+kubectl create -f free-service-job.yaml
+kubectl apply -f free-service-job.yaml  --Doesn't work, must use create (see above)
+
+kubectl logs  pod/pod-name -n <namespace>
+kubectl logs  pod/pod-name -c container -n <namespace>
+kubectl get events -n <namespace>
+kubectl logs free-service-jobf7vcv-bkfcr -n free-service
+
+kubectl get secrets -n free-service
+kubectl get secret regcred-free --output=yaml
+kubectl get secret regcred-free-2 --output=yaml
+
+# From Assignment Prompt
+kubectl get nodes
+kubectl get pods -A
+kubectl describe nodes
+kubectl describe pod --namespace=free-service
+kubectl top nodes
+kubectl top pods
+kubectl delete --all all --namespace=free-service
+kubectl delete --all all --namespace=default
+kubectl get quota --namespace=free-service
+kubectl delete quota/<quota name> --namespace=free-service
+
+# References
+
+# https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
+
+# https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/
+
+# https://kubernetes.io/docs/reference/_print/#generated-values
+
+# https://stackoverflow.com/questions/49032812/how-to-pull-image-from-dockerhub-in-kubernetes
+
+# https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-secret-by-providing-credentials-on-the-command-line
+
+# https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+
+# https://stackoverflow.com/questions/49032812/how-to-pull-image-from-dockerhub-in-kubernetes
+
+# https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+# https://github.com/kubernetes/kubernetes/issues/44501
+
+# https://stackoverflow.com/questions/37302776/what-is-the-meaning-of-imagepullbackoff-status-on-a-kubernetes-pod
